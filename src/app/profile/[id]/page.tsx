@@ -32,7 +32,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const isOwnProfile = user?.id === id
 
   // Fetch profile data
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle()
+  const { data: profile, error: profileError } = await supabase.from("tb01_perfis").select("*").eq("id", id).maybeSingle()
 
   console.log(" Profile data:", profile ? "found" : "not found", "Error:", profileError?.message || "none")
 
@@ -41,7 +41,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     if (isOwnProfile && user) {
       console.log(" Creating profile for user:", user.id)
       // Try to create the profile
-      const { error: insertError } = await supabase.from("profiles").insert({
+      const { error: insertError } = await supabase.from("tb01_perfis").insert({
         id: user.id,
         display_name: user.email?.split("@")[0] || "Usuário",
         bio: null,
@@ -64,7 +64,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   // Fetch user's plants
   const { data: plants } = await supabase
-    .from("plants")
+    .from("tb02_plantas")
     .select("*")
     .eq("user_id", id)
     .eq("is_public", true)

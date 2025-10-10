@@ -51,14 +51,14 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
       const fileName = `${userId}-${Date.now()}.${fileExt}`
 
       const { data, error: uploadError } = await supabase.storage
-        .from("plants")
+        .from("tb02_plantas")
         .upload(fileName, file, { upsert: true })
 
       if (uploadError) throw uploadError
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("plants").getPublicUrl(fileName)
+      } = supabase.storage.from("tb02_plantas").getPublicUrl(fileName)
 
       setImageUrl(publicUrl)
       alert("Foto enviada com sucesso!")
@@ -93,14 +93,14 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
       }
 
       if (isEditing) {
-        const { error: updateError } = await supabase.from("plants").update(plantData).eq("id", plant.id)
+        const { error: updateError } = await supabase.from("tb02_plantas").update(plantData).eq("id", plant.id)
 
         if (updateError) throw updateError
 
         alert("Planta atualizada com sucesso!")
         router.push(`/plants/${plant.id}`)
       } else {
-        const { data, error: insertError } = await supabase.from("plants").insert(plantData).select().single()
+        const { data, error: insertError } = await supabase.from("tb02_plantas").insert(plantData).select().single()
 
         if (insertError) throw insertError
 

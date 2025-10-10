@@ -24,9 +24,9 @@ export default async function PlantPage({ params }: PlantPageProps) {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
 
-  const { data: plant, error } = await supabase.from("plants").select("*").eq("id", id).maybeSingle()
+  const { data: plant, error } = await supabase.from("tb02_plantas").select("*").eq("id", id).maybeSingle()
 
   if (error || !plant) {
     notFound()
@@ -44,10 +44,10 @@ export default async function PlantPage({ params }: PlantPageProps) {
   const today = new Date()
   const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
 
-  const { data: plantOwnerProfile } = await supabase.from("profiles").select("*").eq("id", plant.user_id).maybeSingle()
+  const { data: plantOwnerProfile } = await supabase.from("tb01_perfis").select("*").eq("id", plant.user_id).maybeSingle()
 
   const { data: posts } = await supabase
-    .from("posts")
+    .from("tb03_publicacoes")
     .select("*")
     .eq("plant_id", id)
     .order("created_at", { ascending: false })

@@ -40,13 +40,13 @@ export function PostForm({ userId, plant }: PostFormProps) {
       const fileExt = file.name.split(".").pop()
       const fileName = `${userId}-${Date.now()}.${fileExt}`
 
-      const { data, error: uploadError } = await supabase.storage.from("posts").upload(fileName, file, { upsert: true })
+      const { data, error: uploadError } = await supabase.storage.from("tb03_publicacoes").upload(fileName, file, { upsert: true })
 
       if (uploadError) throw uploadError
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("posts").getPublicUrl(fileName)
+      } = supabase.storage.from("tb03_publicacoes").getPublicUrl(fileName)
 
       setImageUrl(publicUrl)
     } catch (err) {
@@ -71,7 +71,7 @@ export function PostForm({ userId, plant }: PostFormProps) {
       const supabase = createBrowserSupabaseClientForFrontend()
 
       const { data, error: insertError } = await supabase
-        .from("posts")
+        .from("tb03_publicacoes")
         .insert({
           user_id: userId,
           plant_id: plant.id,

@@ -18,10 +18,10 @@ export default async function CalendarPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).single()
 
   // Fetch user's plants
-  const { data: plants } = await supabase.from("plants").select("*").eq("user_id", user.id)
+  const { data: plants } = await supabase.from("tb02_plantas").select("*").eq("user_id", user.id)
 
   // Fetch reminders for the current month
   const today = new Date()
@@ -29,7 +29,7 @@ export default async function CalendarPage() {
   const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
 
   const { data: reminders } = await supabase
-    .from("care_reminders")
+    .from("tb06_lembretes_cuidado")
     .select("*, plants(*)")
     .eq("user_id", user.id)
     .gte("reminder_date", startOfMonth.toISOString().split("T")[0])

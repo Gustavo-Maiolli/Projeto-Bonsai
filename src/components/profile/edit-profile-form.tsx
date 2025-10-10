@@ -71,7 +71,7 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
       const supabase = createBrowserSupabaseClientForFrontend()
 
       const { error: updateError } = await supabase
-        .from("profiles")
+        .from("tb01_perfis")
         .update({
           display_name: displayName,
           bio: bio || null,

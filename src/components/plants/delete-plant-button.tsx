@@ -30,7 +30,7 @@ export function DeletePlantButton({ plantId }: DeletePlantButtonProps) {
 
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
-      const { error } = await supabase.from("plants").delete().eq("id", plantId)
+      const { error } = await supabase.from("tb02_plantas").delete().eq("id", plantId)
 
       if (error) throw error
 

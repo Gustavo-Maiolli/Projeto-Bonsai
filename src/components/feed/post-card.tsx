@@ -40,7 +40,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
 
     if (isLiked) {
       // Unlike
-      const { error } = await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", currentUserId)
+      const { error } = await supabase.from("tb04_curtidas").delete().eq("post_id", post.id).eq("user_id", currentUserId)
 
       if (!error) {
         setIsLiked(false)
@@ -48,7 +48,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
       }
     } else {
       // Like
-      const { error } = await supabase.from("likes").insert({
+      const { error } = await supabase.from("tb04_curtidas").insert({
         post_id: post.id,
         user_id: currentUserId,
       })
@@ -65,7 +65,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
 
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
-      const { error } = await supabase.from("posts").delete().eq("id", post.id)
+      const { error } = await supabase.from("tb03_publicacoes").delete().eq("id", post.id)
 
       if (error) throw error
 

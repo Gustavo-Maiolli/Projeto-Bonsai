@@ -18,12 +18,12 @@ export default async function FeedPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
 
   // The profiles table should be joined without the !user_id hint
   // Supabase will automatically use the user_id foreign key from posts
   const { data: posts, error: postsError } = await supabase
-    .from("posts")
+    .from("tb03_publicacoes")
     .select(
       `
       *,

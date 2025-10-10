@@ -23,10 +23,10 @@ export default async function PostPage({ params }: PostPageProps) {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).single()
 
   const { data: post, error } = await supabase
-    .from("posts")
+    .from("tb03_publicacoes")
     .select(
       `
       *,

@@ -45,7 +45,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
     const supabase = createBrowserSupabaseClientForFrontend()
 
     const { data, error } = await supabase
-      .from("comments")
+      .from("tb05_comentarios")
       .select("*, profiles(*)")
       .eq("post_id", postId)
       .order("created_at", { ascending: true })
@@ -67,7 +67,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
 
-      const { error } = await supabase.from("comments").insert({
+      const { error } = await supabase.from("tb05_comentarios").insert({
         post_id: postId,
         user_id: currentUserId,
         content: newComment.trim(),
@@ -89,7 +89,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
   const handleDelete = async (commentId: string) => {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
-      const { error } = await supabase.from("comments").delete().eq("id", commentId)
+      const { error } = await supabase.from("tb05_comentarios").delete().eq("id", commentId)
 
       if (error) throw error
 

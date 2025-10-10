@@ -31,7 +31,7 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
     const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
 
     const { data } = await supabase
-      .from("care_reminders")
+      .from("tb06_lembretes_cuidado")
       .select("*, plants(*)")
       .eq("user_id", userId)
       .gte("reminder_date", startOfMonth.toISOString().split("T")[0])
@@ -83,7 +83,7 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
 
     // Insert reminders (ignore conflicts)
     if (remindersToCreate.length > 0) {
-      await supabase.from("care_reminders").upsert(remindersToCreate, {
+      await supabase.from("tb06_lembretes_cuidado").upsert(remindersToCreate, {
         onConflict: "user_id,plant_id,reminder_date,reminder_type",
         ignoreDuplicates: true,
       })
@@ -97,7 +97,7 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
     const supabase = createBrowserSupabaseClientForFrontend()
 
     const { error } = await supabase
-      .from("care_reminders")
+      .from("tb06_lembretes_cuidado")
       .update({
         completed: !completed,
         completed_at: !completed ? new Date().toISOString() : null,

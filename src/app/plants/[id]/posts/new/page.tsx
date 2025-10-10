@@ -18,7 +18,7 @@ export default async function NewPostPage({ params }: NewPostPageProps) {
     redirect("/auth/login")
   }
 
-  const { data: plant, error } = await supabase.from("plants").select("*").eq("id", id).eq("user_id", user.id).single()
+  const { data: plant, error } = await supabase.from("tb02_plantas").select("*").eq("id", id).eq("user_id", user.id).single()
 
   if (error || !plant) {
     notFound()

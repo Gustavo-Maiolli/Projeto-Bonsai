@@ -18,10 +18,10 @@ export default async function PlantsPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
 
   const { data: plants } = await supabase
-    .from("plants")
+    .from("tb02_plantas")
     .select("*")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })

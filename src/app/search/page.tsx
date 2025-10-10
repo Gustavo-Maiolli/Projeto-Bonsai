@@ -21,7 +21,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
 
   const query = params.q || ""
   const searchType = params.type || "all"
@@ -33,7 +33,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   if (query) {
     // Search users
     if (searchType === "all" || searchType === "users") {
-      const { data } = await supabase.from("profiles").select("*").ilike("display_name", `%${query}%`).limit(20)
+      const { data } = await supabase.from("tb01_perfis").select("*").ilike("display_name", `%${query}%`).limit(20)
 
       users = data || []
     }
@@ -41,7 +41,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     // Search plants
     if (searchType === "all" || searchType === "plants") {
       const { data: plantsData } = await supabase
-        .from("plants")
+        .from("tb02_plantas")
         .select("*")
         .eq("is_public", true)
         .or(`species.ilike.%${query}%,nickname.ilike.%${query}%`)
@@ -52,7 +52,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         const userIds = [...new Set(plantsData.map((p) => p.user_id))]
 
         // Fetch profiles for these users
-        const { data: profilesData } = await supabase.from("profiles").select("*").in("id", userIds)
+        const { data: profilesData } = await supabase.from("tb01_perfis").select("*").in("id", userIds)
 
         // Map profiles to plants
         plants = plantsData.map((plant) => ({
@@ -65,7 +65,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     // Search posts
     if (searchType === "all" || searchType === "posts") {
       const { data: postsData } = await supabase
-        .from("posts")
+        .from("tb03_publicacoes")
         .select(
           `
           *,
