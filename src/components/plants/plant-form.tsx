@@ -13,18 +13,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Leaf, Upload, Loader2 } from "lucide-react"
 import Link from "next/link"
-import type { Plant } from "@/lib/types" // Assumimos que Plant agora tem as chaves tb02_
+import type { Plant } from "@/lib/types" 
 
 interface PlantFormProps {
   userId: string
-  plant?: Plant // O objeto Plant deve ter a nova nomenclatura tb02_
+  plant?: Plant 
 }
 
 export function PlantForm({ userId, plant }: PlantFormProps) {
   const router = useRouter()
   const isEditing = !!plant
 
-  // Inicialização usando a nova nomenclatura de Plant (se for edição)
   const [species, setSpecies] = useState(plant?.tb02_especie || "")
   const [nickname, setNickname] = useState(plant?.tb02_apelido || "")
   const [location, setLocation] = useState(plant?.tb02_localizacao || "")
@@ -49,24 +48,28 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
       const fileExt = file.name.split(".").pop()
-      const fileName = `${userId}-${Date.now()}.${fileExt}`
+      
+      // CORREÇÃO CRÍTICA: Definir o caminho de upload para a pasta do usuário
+      // O RLS exige o formato 'userId/nome_do_arquivo' para validar a propriedade.
+      const uploadPath = `${userId}/${Date.now()}.${fileExt}`
 
-      // O bucket do storage para plantas é tb02_plantas
+      // O bucket do storage é "plantas"
       const { data, error: uploadError } = await supabase.storage
-        .from("plantas")
-        .upload(fileName, file, { upsert: true })
+        .from("tb02_plantas")
+        .upload(uploadPath, file, { upsert: true })
 
       if (uploadError) throw uploadError
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("plantas").getPublicUrl(fileName)
+      } = supabase.storage.from("tb02_plantas").getPublicUrl(uploadPath) // Usar uploadPath aqui também
 
       setImageUrl(publicUrl)
-      alert("Foto enviada com sucesso!")
+      console.log("Foto enviada com sucesso!", publicUrl)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao fazer upload")
-      alert("Erro ao fazer upload da foto")
+      const errorMessage = err instanceof Error ? err.message : "Erro ao fazer upload desconhecido"
+      setError(`Erro ao fazer upload da foto: ${errorMessage}`)
+      console.error("Erro no upload:", err)
     } finally {
       setUploadingImage(false)
     }
@@ -104,7 +107,7 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
 
         if (updateError) throw updateError
 
-        alert("Planta atualizada com sucesso!")
+        console.log("Planta atualizada com sucesso!")
         router.push(`/plants/${plant.tb02_id}`)
       } else {
         // 3. Operação INSERT
@@ -112,15 +115,16 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
 
         if (insertError) throw insertError
 
-        alert(`${nickname || species} foi cadastrada com sucesso!`)
+        console.log(`${nickname || species} foi cadastrada com sucesso!`)
         // Redirecionando com o novo ID: data.tb02_id
         router.push(`/plants/${data.tb02_id}`)
       }
 
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao salvar planta")
-      alert("Erro ao salvar planta: " + (err instanceof Error ? err.message : "Erro desconhecido"))
+      const errorMessage = err instanceof Error ? err.message : "Erro desconhecido"
+      setError(`Erro ao salvar planta: ${errorMessage}`)
+      console.error("Erro ao salvar planta:", err)
     } finally {
       setIsLoading(false)
     }

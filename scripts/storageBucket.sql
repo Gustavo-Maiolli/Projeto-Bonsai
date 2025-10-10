@@ -1,95 +1,119 @@
--- Novo bucket para avatares (tb01_perfis)
+-- **** CONFIGURAÇÃO FINAL DE BUCKETS E RLS (COM PREFIXOS E CORREÇÃO DE SEGURANÇA) ****
+
+-- 1. CRIAÇÃO DE BUCKETS (Usando prefixos tb0X_ consistentes)
+--------------------------------------------------------------------------------
+-- Bucket para Avatares (Suporte a tb01_perfis)
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('avatares', 'avatares', true)
+VALUES ('tb01_avatares', 'tb01_avatares', true)
 ON CONFLICT (id) DO NOTHING;
 
+-- Bucket para Plantas (Suporte a tb02_plantas)
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('plantas', 'plantas', true)
+VALUES ('tb02_plantas', 'tb02_plantas', true)
 ON CONFLICT (id) DO NOTHING;
 
+-- Bucket para Publicações (Suporte a tb03_publicacoes)
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('publicacoes', 'publicacoes', true)
+VALUES ('tb03_publicacoes', 'tb03_publicacoes', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Remove políticas antigas para evitar conflitos de nome (mantendo o nome original)
+
+-- 2. REMOÇÃO DE POLÍTICAS ANTIGAS (Limpeza)
+--------------------------------------------------------------------------------
+-- Remove todas as políticas antigas para evitar conflitos de nome/ID.
 DROP POLICY IF EXISTS "Avatar images are publicly accessible" ON storage.objects;
 DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
 DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
 DROP POLICY IF EXISTS "Users can delete their own avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios autenticados podem enviar imagens de plantas" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios podem atualizar suas proprias imagens de plantas" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios podem deletar suas proprias imagens de plantas" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios autenticados podem enviar imagens de publicacoes" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios podem atualizar suas proprias imagens de publicacoes" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios podem deletar suas proprias imagens de publicacoes" ON storage.objects;
+DROP POLICY IF EXISTS "Imagens de plantas sao publicas" ON storage.objects;
+DROP POLICY IF EXISTS "Imagens de publicacoes sao publicas" ON storage.objects;
 
--- Políticas para 'avatares'
-CREATE POLICY "Imagens de avatar sao publicas"
+
+-- 3. POLÍTICAS RLS (CORRIGIDAS COM PREFIXOS E REGRA DE PROPRIEDADE auth.uid())
+--------------------------------------------------------------------------------
+
+-- BUCKET 'tb01_avatares'
+CREATE POLICY "RLS - Select em tb01_avatares - Imagens sao publicas"
 ON storage.objects FOR SELECT
-USING (bucket_id = 'avatares');
+USING (bucket_id = 'tb01_avatares');
 
-CREATE POLICY "Usuarios podem enviar seu proprio avatar"
+CREATE POLICY "RLS - Insert em tb01_avatares - Apenas na sua pasta"
 ON storage.objects FOR INSERT
 WITH CHECK (
- bucket_id = 'avatares' AND
- auth.uid()::text = (storage.foldername(name))[1]
+ bucket_id = 'tb01_avatares' AND
+ auth.uid()::text = (storage.foldername(name))[1]
 );
 
-CREATE POLICY "Usuarios podem atualizar seu proprio avatar"
+CREATE POLICY "RLS - Update em tb01_avatares - Apenas na sua pasta"
 ON storage.objects FOR UPDATE
 USING (
- bucket_id = 'avatares' AND
- auth.uid()::text = (storage.foldername(name))[1]
+ bucket_id = 'tb01_avatares' AND
+ auth.uid()::text = (storage.foldername(name))[1]
 );
 
-CREATE POLICY "Usuarios podem deletar seu proprio avatar"
+CREATE POLICY "RLS - Delete em tb01_avatares - Apenas na sua pasta"
 ON storage.objects FOR DELETE
 USING (
- bucket_id = 'avatares' AND
- auth.uid()::text = (storage.foldername(name))[1]
+ bucket_id = 'tb01_avatares' AND
+ auth.uid()::text = (storage.foldername(name))[1]
 );
 
 
-CREATE POLICY "Imagens de plantas sao publicas"
+-- BUCKET 'tb02_plantas' (CORREÇÃO CRÍTICA DO 400 BAD REQUEST)
+CREATE POLICY "RLS - Select em tb02_plantas - Imagens sao publicas"
 ON storage.objects FOR SELECT
-USING (bucket_id = 'plantas');
+USING (bucket_id = 'tb02_plantas');
 
-CREATE POLICY "Usuarios autenticados podem enviar imagens de plantas"
+CREATE POLICY "RLS - Insert em tb02_plantas - Apenas na sua pasta"
 ON storage.objects FOR INSERT
 WITH CHECK (
- bucket_id = 'plantas' AND
- auth.role() = 'authenticated'
+ bucket_id = 'tb02_plantas' AND
+ auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA: Exige propriedade da pasta
 );
 
-CREATE POLICY "Usuarios podem atualizar suas proprias imagens de plantas"
+CREATE POLICY "RLS - Update em tb02_plantas - Apenas na sua pasta"
 ON storage.objects FOR UPDATE
 USING (
- bucket_id = 'plantas' AND
- auth.role() = 'authenticated'
+ bucket_id = 'tb02_plantas' AND
+ auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
 );
 
-CREATE POLICY "Usuarios podem deletar suas proprias imagens de plantas"
+CREATE POLICY "RLS - Delete em tb02_plantas - Apenas na sua pasta"
 ON storage.objects FOR DELETE
 USING (
- bucket_id = 'plantas' AND
- auth.role() = 'authenticated'
+ bucket_id = 'tb02_plantas' AND
+ auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
 );
 
-CREATE POLICY "Imagens de publicacoes sao publicas"
-ON storage.objects FOR SELECT
-USING (bucket_id = 'publicacoes');
 
-CREATE POLICY "Usuarios autenticados podem enviar imagens de publicacoes"
+-- BUCKET 'tb03_publicacoes' (CORREÇÃO CRÍTICA DO 400 BAD REQUEST)
+CREATE POLICY "RLS - Select em tb03_publicacoes - Imagens sao publicas"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'tb03_publicacoes');
+
+CREATE POLICY "RLS - Insert em tb03_publicacoes - Apenas na sua pasta"
 ON storage.objects FOR INSERT
 WITH CHECK (
- bucket_id = 'publicacoes' AND
- auth.role() = 'authenticated'
+ bucket_id = 'tb03_publicacoes' AND
+ auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
 );
 
-CREATE POLICY "Usuarios podem atualizar suas proprias imagens de publicacoes"
+CREATE POLICY "RLS - Update em tb03_publicacoes - Apenas na sua pasta"
 ON storage.objects FOR UPDATE
 USING (
- bucket_id = 'publicacoes' AND
- auth.role() = 'authenticated'
+ bucket_id = 'tb03_publicacoes' AND
+ auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
 );
 
-CREATE POLICY "Usuarios podem deletar suas proprias imagens de publicacoes"
+CREATE POLICY "RLS - Delete em tb03_publicacoes - Apenas na sua pasta"
 ON storage.objects FOR DELETE
 USING (
- bucket_id = 'publicacoes' AND
- auth.role() = 'authenticated'
+ bucket_id = 'tb03_publicacoes' AND
+ auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
 );
