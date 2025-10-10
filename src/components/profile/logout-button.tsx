@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { LogOut, Loader2 } from "lucide-react"
 import { useState } from "react"
@@ -13,7 +13,7 @@ export function LogoutButton() {
   const handleLogout = async () => {
     setIsLoading(true)
     try {
-      const supabase = createClient()
+      const supabase = createBrowserSupabaseClientForFrontend()
       await supabase.auth.signOut()
       router.push("/auth/login")
       router.refresh()

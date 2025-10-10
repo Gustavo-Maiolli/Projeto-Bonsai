@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -26,7 +26,7 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
   }, [currentDate])
 
   const loadReminders = async () => {
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClientForFrontend()
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
     const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
 
@@ -43,7 +43,7 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
   }
 
   const generateReminders = async () => {
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClientForFrontend()
     const today = new Date()
     const remindersToCreate: any[] = []
 
@@ -94,7 +94,7 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
   }
 
   const toggleReminder = async (reminderId: string, completed: boolean) => {
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClientForFrontend()
 
     const { error } = await supabase
       .from("care_reminders")

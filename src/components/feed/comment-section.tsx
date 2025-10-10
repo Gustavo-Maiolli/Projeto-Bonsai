@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -42,7 +42,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
 
   const loadComments = async () => {
     setIsLoading(true)
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClientForFrontend()
 
     const { data, error } = await supabase
       .from("comments")
@@ -65,7 +65,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
     setIsSubmitting(true)
 
     try {
-      const supabase = createClient()
+      const supabase = createBrowserSupabaseClientForFrontend()
 
       const { error } = await supabase.from("comments").insert({
         post_id: postId,
@@ -88,7 +88,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
 
   const handleDelete = async (commentId: string) => {
     try {
-      const supabase = createClient()
+      const supabase = createBrowserSupabaseClientForFrontend()
       const { error } = await supabase.from("comments").delete().eq("id", commentId)
 
       if (error) throw error

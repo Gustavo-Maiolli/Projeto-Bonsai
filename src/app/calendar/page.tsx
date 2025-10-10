@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -8,7 +8,7 @@ import { CalendarView } from "@/components/calendar/calendar-view"
 import { Logo } from "@/components/ui/logo"
 
 export default async function CalendarPage() {
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

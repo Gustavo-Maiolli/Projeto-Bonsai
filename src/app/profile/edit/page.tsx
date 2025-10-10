@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { redirect } from "next/navigation"
 import { EditProfileForm } from "@/components/profile/edit-profile-form"
 
 export default async function EditProfilePage() {
   console.log("[v0] Edit profile page loaded")
 
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

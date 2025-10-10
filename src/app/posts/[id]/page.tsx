@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { notFound, redirect } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Leaf, Search } from "lucide-react"
@@ -13,7 +13,7 @@ interface PostPageProps {
 
 export default async function PostPage({ params }: PostPageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },
@@ -54,7 +54,7 @@ export default async function PostPage({ params }: PostPageProps) {
       likes: post.likes?.length || 0,
       comments: post.comments?.length || 0,
     },
-    isLikedByUser: post.likes?.some((like) => like.user_id === user.id) || false,
+    //isLikedByUser: post.likes?.some((like) => like.user_id === user.id) || false,
   }
 
   return (

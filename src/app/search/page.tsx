@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { redirect } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Leaf } from "lucide-react"
@@ -11,7 +11,7 @@ interface SearchPageProps {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

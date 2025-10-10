@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -36,7 +36,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
   const isOwner = post.user_id === currentUserId
 
   const handleLike = async () => {
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClientForFrontend()
 
     if (isLiked) {
       // Unlike
@@ -64,7 +64,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
     setIsDeleting(true)
 
     try {
-      const supabase = createClient()
+      const supabase = createBrowserSupabaseClientForFrontend()
       const { error } = await supabase.from("posts").delete().eq("id", post.id)
 
       if (error) throw error

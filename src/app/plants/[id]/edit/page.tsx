@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { notFound, redirect } from "next/navigation"
 import { PlantForm } from "@/components/plants/plant-form"
 
@@ -8,7 +8,7 @@ interface EditPlantPageProps {
 
 export default async function EditPlantPage({ params }: EditPlantPageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

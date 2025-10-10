@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { notFound, redirect } from "next/navigation"
 import { PostForm } from "@/components/feed/post-form"
 
@@ -8,7 +8,7 @@ interface NewPostPageProps {
 
 export default async function NewPostPage({ params }: NewPostPageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { notFound, redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,7 +14,7 @@ interface PlantPageProps {
 
 export default async function PlantPage({ params }: PlantPageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

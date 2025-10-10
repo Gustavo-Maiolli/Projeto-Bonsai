@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -29,7 +29,7 @@ export function DeletePlantButton({ plantId }: DeletePlantButtonProps) {
     setIsDeleting(true)
 
     try {
-      const supabase = createClient()
+      const supabase = createBrowserSupabaseClientForFrontend()
       const { error } = await supabase.from("plants").delete().eq("id", plantId)
 
       if (error) throw error

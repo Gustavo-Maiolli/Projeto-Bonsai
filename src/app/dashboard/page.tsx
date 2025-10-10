@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -8,7 +8,7 @@ import Link from "next/link"
 import { Logo } from "@/components/ui/logo"
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

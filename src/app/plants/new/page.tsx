@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { redirect } from "next/navigation"
 import { PlantForm } from "@/components/plants/plant-form"
 
 export default async function NewPlantPage() {
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },

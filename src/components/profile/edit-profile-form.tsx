@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -38,7 +38,7 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
     setError(null)
 
     try {
-      const supabase = createClient()
+      const supabase = createBrowserSupabaseClientForFrontend()
       const fileExt = file.name.split(".").pop()
       const fileName = `${user.id}-${Date.now()}.${fileExt}`
 
@@ -68,7 +68,7 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
     setError(null)
 
     try {
-      const supabase = createClient()
+      const supabase = createBrowserSupabaseClientForFrontend()
 
       const { error: updateError } = await supabase
         .from("profiles")

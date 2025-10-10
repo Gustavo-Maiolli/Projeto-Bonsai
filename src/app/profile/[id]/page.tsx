@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { notFound, redirect } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -23,7 +23,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     redirect("/profile/edit")
   }
 
-  const supabase = await createClient()
+  const supabase = await createClientForBackend()
 
   const {
     data: { user },
