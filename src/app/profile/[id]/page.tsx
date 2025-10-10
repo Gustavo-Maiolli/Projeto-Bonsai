@@ -15,11 +15,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const resolvedParams = await params
   const id = resolvedParams.id
 
-  console.log("[v0] Profile page - received id:", id)
+  console.log(" Profile page - received id:", id)
 
   // Check if trying to access edit route - redirect immediately
   if (id === "edit" || id.includes("edit")) {
-    console.log("[v0] Redirecting to edit page")
+    console.log(" Redirecting to edit page")
     redirect("/profile/edit")
   }
 
@@ -34,12 +34,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   // Fetch profile data
   const { data: profile, error: profileError } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle()
 
-  console.log("[v0] Profile data:", profile ? "found" : "not found", "Error:", profileError?.message || "none")
+  console.log(" Profile data:", profile ? "found" : "not found", "Error:", profileError?.message || "none")
 
   if (!profile) {
     // If it's the user's own profile and doesn't exist, create it or redirect to edit
     if (isOwnProfile && user) {
-      console.log("[v0] Creating profile for user:", user.id)
+      console.log(" Creating profile for user:", user.id)
       // Try to create the profile
       const { error: insertError } = await supabase.from("profiles").insert({
         id: user.id,
@@ -50,15 +50,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       // If creation succeeded, redirect to edit page to complete profile
       if (!insertError) {
-        console.log("[v0] Profile created, redirecting to edit")
+        console.log(" Profile created, redirecting to edit")
         redirect("/profile/edit")
       } else {
-        console.log("[v0] Error creating profile:", insertError.message)
+        console.log(" Error creating profile:", insertError.message)
       }
     }
 
     // If it's someone else's profile or creation failed, show not found
-    console.log("[v0] Profile not found, showing 404")
+    console.log(" Profile not found, showing 404")
     notFound()
   }
 

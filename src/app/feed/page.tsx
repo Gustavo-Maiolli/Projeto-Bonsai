@@ -46,8 +46,8 @@ export default async function FeedPage() {
     .eq("plants.is_public", true)
     .order("created_at", { ascending: false })
 
-  console.log("[v0] Posts query error:", postsError)
-  console.log("[v0] Posts data:", posts)
+  console.log(" Posts query error:", postsError)
+  console.log(" Posts data:", posts)
 
   const postsWithCounts = posts?.map((post) => ({
     ...post,
