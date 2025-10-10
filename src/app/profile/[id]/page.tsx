@@ -7,13 +7,14 @@ import { Leaf, Calendar, Settings } from "lucide-react"
 import Link from "next/link"
 import { LogoutButton } from "@/components/profile/logout-button"
 
+// A interface agora reflete que 'params' é um objeto síncrono.
 interface ProfilePageProps {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const resolvedParams = await params
-  const id = resolvedParams.id
+  // CORREÇÃO: Usando o ID diretamente do objeto params, eliminando o await desnecessário.
+  const id = params.id
 
   console.log(" Profile page - received id:", id)
 
@@ -31,11 +32,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const isOwnProfile = user?.id === id
 
-  // Fetch profile data - Usando tb01_id_usuario
+  // Fetch profile data - Usando tb01_id
   const { data: profile, error: profileError } = await supabase
     .from("tb01_perfis")
     .select("*")
-    .eq("tb01_id_usuario", id)
+    .eq("tb01_id", id)
     .maybeSingle()
 
   console.log(" Profile data:", profile ? "found" : "not found", "Error:", profileError?.message || "none")
@@ -46,10 +47,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       console.log(" Creating profile for user:", user.id)
       // Try to create the profile - Usando a nomenclatura tb01_
       const { error: insertError } = await supabase.from("tb01_perfis").insert({
-        tb01_id_usuario: user.id,
-        tb01_nome_exibicao: user.email?.split("@")[0] || "Usuário",
-        tb01_biografia: null,
-        tb01_url_avatar: null,
+        tb01_id: user.id,
+        tb01_nome: user.email?.split("@")[0] || "Usuário",
+        tb01_bio: null,
+        tb01_avatar_url: null,
       })
 
       // If creation succeeded, redirect to edit page to complete profile
@@ -98,18 +99,18 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-6 items-start">
               <Avatar className="h-24 w-24">
-                {/* Usando tb01_url_avatar */}
-                <AvatarImage src={profile.tb01_url_avatar || undefined} />
+                {/* Usando tb01_avatar_url */}
+                <AvatarImage src={profile.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl">
-                  {/* Usando tb01_nome_exibicao */}
-                  {profile.tb01_nome_exibicao.charAt(0).toUpperCase()}
+                  {/* Usando tb01_nome */}
+                  {profile.tb01_nome.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    {/* Usando tb01_nome_exibicao */}
-                    <h2 className="text-2xl font-bold text-emerald-900">{profile.tb01_nome_exibicao}</h2>
+                    {/* Usando tb01_nome */}
+                    <h2 className="text-2xl font-bold text-emerald-900">{profile.tb01_nome}</h2>
                     <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                       <Calendar className="h-4 w-4" />
                       Membro desde{" "}
@@ -129,8 +130,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     </Button>
                   )}
                 </div>
-                {/* Usando tb01_biografia */}
-                {profile.tb01_biografia && <p className="text-emerald-700 mt-3">{profile.tb01_biografia}</p>}
+                {/* Usando tb01_bio */}
+                {profile.tb01_bio && <p className="text-emerald-700 mt-3">{profile.tb01_bio}</p>}
                 <div className="flex gap-4 mt-4 text-sm">
                   <div>
                     <span className="font-semibold text-emerald-900">{plants?.length || 0}</span>{" "}

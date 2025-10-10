@@ -20,8 +20,8 @@ interface Comment {
   tb05_id_usuario: string // Novo ID do usuário
   tb05_data_criacao: string // Novo campo de data de criação
   tb01_perfis: { // Nome da relação
-    tb01_nome_exibicao: string // Coluna do perfil
-    tb01_url_avatar: string | null // Coluna do perfil
+    tb01_nome: string // Coluna do perfil
+    tb01_avatar_url: string | null // Coluna do perfil
   }
 }
 
@@ -54,7 +54,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
         tb05_conteudo,
         tb05_id_usuario,
         tb05_data_criacao,
-        tb01_perfis (tb01_nome_exibicao, tb01_url_avatar)
+        tb01_perfis (tb01_nome, tb01_avatar_url)
       `)
       .eq("tb05_id_publicacao", postId) // Usando tb05_id_publicacao
       .order("tb05_data_criacao", { ascending: true }) // Usando tb05_data_criacao
@@ -157,20 +157,20 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
                 {/* Usando tb05_id_usuario */}
                 <Link href={`/profile/${comment.tb05_id_usuario}`}>
                   <Avatar className="h-10 w-10">
-                    {/* Usando tb01_url_avatar */}
-                    <AvatarImage src={comment.tb01_perfis.tb01_url_avatar || undefined} />
+                    {/* Usando tb01_avatar_url */}
+                    <AvatarImage src={comment.tb01_perfis.tb01_avatar_url || undefined} />
                     <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                      {/* Usando tb01_nome_exibicao */}
-                      {comment.tb01_perfis.tb01_nome_exibicao.charAt(0).toUpperCase()}
+                      {/* Usando tb01_nome */}
+                      {comment.tb01_perfis.tb01_nome.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Link>
                 <div className="flex-1 bg-emerald-50 rounded-lg p-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      {/* Usando tb05_id_usuario e tb01_nome_exibicao */}
+                      {/* Usando tb05_id_usuario e tb01_nome */}
                       <Link href={`/profile/${comment.tb05_id_usuario}`} className="font-semibold text-sm hover:underline">
-                        {comment.tb01_perfis.tb01_nome_exibicao}
+                        {comment.tb01_perfis.tb01_nome}
                       </Link>
                       {/* Usando tb05_conteudo */}
                       <p className="text-sm text-emerald-700 mt-1">{comment.tb05_conteudo}</p>

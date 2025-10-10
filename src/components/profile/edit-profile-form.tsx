@@ -75,9 +75,9 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
       const { error: updateError } = await supabase
         .from("tb01_perfis")
         .update({
-          tb01_nome_exibicao: displayName, // Mapeado de display_name
-          tb01_biografia: bio || null, // Mapeado de bio
-          tb01_url_avatar: avatarUrl || null, // Mapeado de avatar_url
+          tb01_nome: displayName, // Mapeado de display_name
+          tb01_bio: bio || null, // Mapeado de bio
+          tb01_avatar_url: avatarUrl || null, // Mapeado de avatar_url
         })
         .eq("tb01_id", user.id) // Filtrando pelo ID do usuário, que é a PK da tb01_perfis
 

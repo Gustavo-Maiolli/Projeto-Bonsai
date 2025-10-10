@@ -25,7 +25,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
   }
 
   // Busca do perfil do usuário logado (usado no header)
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id_usuario", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id", user.id).maybeSingle()
 
   // Busca da planta
   const { data: plant, error } = await supabase.from("tb02_plantas").select("*").eq("tb02_id", id).maybeSingle()
@@ -50,7 +50,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
   const { data: plantOwnerProfile } = await supabase
     .from("tb01_perfis")
     .select("*")
-    .eq("tb01_id_usuario", plant.tb02_id_usuario)
+    .eq("tb01_id", plant.tb02_id_usuario)
     .maybeSingle()
 
   // Busca dos posts da planta
@@ -77,9 +77,9 @@ export default async function PlantPage({ params }: PlantPageProps) {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-emerald-600">
-                <AvatarImage src={profile?.tb01_url_avatar || undefined} />
+                <AvatarImage src={profile?.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                  {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || "U"}
+                  {profile?.tb01_nome?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -143,12 +143,12 @@ export default async function PlantPage({ params }: PlantPageProps) {
               {plantOwnerProfile && (
                 <Link href={`/profile/${plant.tb02_id_usuario}`} className="flex items-center gap-2 mt-3 hover:opacity-80">
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src={plantOwnerProfile.tb01_url_avatar || undefined} />
+                    <AvatarImage src={plantOwnerProfile.tb01_avatar_url || undefined} />
                     <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
-                      {plantOwnerProfile.tb01_nome_exibicao.charAt(0).toUpperCase()}
+                      {plantOwnerProfile.tb01_nome.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-muted-foreground">{plantOwnerProfile.tb01_nome_exibicao}</span>
+                  <span className="text-sm text-muted-foreground">{plantOwnerProfile.tb01_nome}</span>
                 </Link>
               )}
             </div>

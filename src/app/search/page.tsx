@@ -25,7 +25,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { data: profile } = await supabase
     .from("tb01_perfis")
     .select("*")
-    .eq("tb01_id_usuario", user.id) // Usando tb01_id_usuario
+    .eq("tb01_id", user.id) // Usando tb01_id
     .maybeSingle()
 
   const query = params.q || ""
@@ -41,7 +41,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       const { data } = await supabase
         .from("tb01_perfis")
         .select("*")
-        .ilike("tb01_nome_exibicao", `%${query}%`) // Usando tb01_nome_exibicao
+        .ilike("tb01_nome", `%${query}%`) // Usando tb01_nome
         .limit(20)
 
       users = data || []
@@ -64,13 +64,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         const { data: profilesData } = await supabase
           .from("tb01_perfis")
           .select("*")
-          .in("tb01_id_usuario", userIds) // Usando tb01_id_usuario
+          .in("tb01_id", userIds) // Usando tb01_id
 
         // Map profiles to plants
         plants = plantsData.map((plant) => ({
           ...plant,
           // Mapeando para o campo de ID correto
-          profiles: profilesData?.find((p) => p.tb01_id_usuario === plant.tb02_id_usuario),
+          profiles: profilesData?.find((p) => p.tb01_id === plant.tb02_id_usuario),
         }))
       }
     }
@@ -90,9 +90,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             tb02_id_usuario
           ),
           tb01_perfis!tb03_id_usuario_fkey(  // Relação com tb01_perfis (Autor)
-            tb01_id_usuario,
-            tb01_nome_exibicao,
-            tb01_url_avatar
+            tb01_id,
+            tb01_nome,
+            tb01_avatar_url
           ),
           tb04_curtidas(tb04_id, tb04_id_usuario), // Relação de likes
           tb05_comentarios(tb05_id)          // Relação de comentários
@@ -129,11 +129,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </Link>
           <Link href={`/profile/${user.id}`}>
             <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-emerald-600">
-              {/* Usando tb01_url_avatar */}
-              <AvatarImage src={profile?.tb01_url_avatar || undefined} />
+              {/* Usando tb01_avatar_url */}
+              <AvatarImage src={profile?.tb01_avatar_url || undefined} />
               <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                {/* Usando tb01_nome_exibicao */}
-                {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || "U"}
+                {/* Usando tb01_nome */}
+                {profile?.tb01_nome?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
           </Link>

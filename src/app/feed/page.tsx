@@ -18,35 +18,33 @@ export default async function FeedPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id_usuario", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
 
-  // O Supabase irá tentar usar as chaves estrangeiras apropriadas.
-  // Renomeamos as tabelas e colunas para o padrão tbXX_.
+  // The profiles table should be joined without the !user_id hint
+  // Supabase will automatically use the user_id foreign key from posts
   const { data: posts, error: postsError } = await supabase
     .from("tb03_publicacoes")
     .select(
       `
       *,
-      tb02_plantas!inner(
-        tb02_id,
-        tb02_especie,
-        tb02_apelido,
-        tb02_publica,
-        tb02_id_usuario
+      plants!inner(
+        id,
+        species,
+        nickname,
+        is_public,
+        user_id
       ),
-      tb01_perfis(
-        tb01_id_usuario,
-        tb01_nome_exibicao,
-        tb01_url_avatar
+      profiles(
+        id,
+        display_name,
+        avatar_url
       ),
-      tb04_curtidas(tb04_id, tb04_id_usuario),
-      tb05_comentarios(tb05_id)
+      likes(id, user_id),
+      comments(id)
     `,
     )
-    // Filtro agora usa o nome da coluna correto na tabela tb02_plantas
-    .eq("tb02_plantas.tb02_publica", true)
-    // Coluna de ordenação
-    .order("tb03_data_criacao", { ascending: false })
+    .eq("tb02_plantas.is_public", true)
+    .order("created_at", { ascending: false })
 
   console.log(" Posts query error:", postsError)
   console.log(" Posts data:", posts)
@@ -54,12 +52,10 @@ export default async function FeedPage() {
   const postsWithCounts = posts?.map((post) => ({
     ...post,
     _count: {
-      // Renomeando acessos de relações
-      likes: post.tb04_curtidas?.length || 0,
-      comments: post.tb05_comentarios?.length || 0,
+      likes: post.likes?.length || 0,
+      comments: post.comments?.length || 0,
     },
-    // Verificando se o usuário deu like usando o novo nome da coluna
-    isLikedByUser: post.tb04_curtidas?.some((like: any) => like.tb04_id_usuario === user.id) || false,
+    isLikedByUser: post.likes?.some((like: any) => like.user_id === user.id) || false,
   }))
 
   return (
@@ -78,10 +74,9 @@ export default async function FeedPage() {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-accent">
-                {/* Acesso ao perfil */}
-                <AvatarImage src={profile?.tb01_url_avatar || undefined} />
+                <AvatarImage src={profile?.avatar_url || undefined} />
                 <AvatarFallback className="bg-accent/10 text-accent">
-                  {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || "U"}
+                  {profile?.display_name?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -97,8 +92,7 @@ export default async function FeedPage() {
 
         <div className="space-y-6">
           {postsWithCounts && postsWithCounts.length > 0 ? (
-            // O componente PostCard precisará ser atualizado para esperar a nova estrutura de dados
-            postsWithCounts.map((post) => <PostCard key={post.tb03_id} post={post} currentUserId={user.id} />)
+            postsWithCounts.map((post) => <PostCard key={post.id} post={post} currentUserId={user.id} />)
           ) : (
             <div className="text-center py-16">
               <Leaf className="h-16 w-16 text-primary/20 mx-auto mb-4" />

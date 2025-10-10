@@ -21,7 +21,7 @@ export default async function DashboardPage() {
   const { data: profile } = await supabase
     .from("tb01_perfis")
     .select("*")
-    .eq("tb01_id_usuario", user.id)
+    .eq("tb01_id", user.id)
     .maybeSingle()
 
   const { data: tb02_plantas } = await supabase
@@ -47,9 +47,9 @@ export default async function DashboardPage() {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-accent">
-                <AvatarImage src={profile?.tb01_url_avatar || undefined} />
+                <AvatarImage src={profile?.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-accent/10 text-accent">
-                  {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || "U"}
+                  {profile?.tb01_nome?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-primary mb-2">Olá, {profile?.tb01_nome_exibicao || "Usuário"}!</h2>
+          <h2 className="text-3xl font-bold text-primary mb-2">Olá, {profile?.tb01_nome || "Usuário"}!</h2>
           <p className="text-primary/70">Bem-vindo ao seu painel de cuidados com bonsais</p>
         </div>
 

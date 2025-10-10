@@ -53,14 +53,14 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
 
       // O bucket do storage para plantas é tb02_plantas
       const { data, error: uploadError } = await supabase.storage
-        .from("tb02_plantas")
+        .from("plantas")
         .upload(fileName, file, { upsert: true })
 
       if (uploadError) throw uploadError
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("tb02_plantas").getPublicUrl(fileName)
+      } = supabase.storage.from("plantas").getPublicUrl(fileName)
 
       setImageUrl(publicUrl)
       alert("Foto enviada com sucesso!")

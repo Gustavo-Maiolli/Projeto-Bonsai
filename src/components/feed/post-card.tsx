@@ -100,16 +100,16 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
             {/* Link para o perfil - Usando tb03_id_usuario */}
             <Link href={`/profile/${post.tb03_id_usuario}`} className="flex items-center gap-3 hover:opacity-80">
               <Avatar>
-                {/* Usando tb01_url_avatar */}
-                <AvatarImage src={userProfile?.tb01_url_avatar || undefined} />
+                {/* Usando tb01_avatar_url */}
+                <AvatarImage src={userProfile?.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                  {/* Usando tb01_nome_exibicao */}
-                  {userProfile?.tb01_nome_exibicao.charAt(0).toUpperCase()}
+                  {/* Usando tb01_nome */}
+                  {userProfile?.tb01_nome.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                {/* Usando tb01_nome_exibicao */}
-                <p className="font-semibold text-emerald-900">{userProfile?.tb01_nome_exibicao}</p>
+                {/* Usando tb01_nome */}
+                <p className="font-semibold text-emerald-900">{userProfile?.tb01_nome}</p>
                 {/* Link para a planta - Usando tb02_id */}
                 <Link href={`/plants/${plantData?.tb02_id}`} className="text-sm text-muted-foreground hover:underline">
                   {/* Usando tb02_apelido ou tb02_especie */}
@@ -163,8 +163,8 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
             {/* Usando tb03_conteudo */}
             {post.tb03_conteudo && (
               <div>
-                {/* Usando tb01_nome_exibicao */}
-                <span className="font-semibold text-emerald-900">{userProfile?.tb01_nome_exibicao}</span>{" "}
+                {/* Usando tb01_nome */}
+                <span className="font-semibold text-emerald-900">{userProfile?.tb01_nome}</span>{" "}
                 <span className="text-emerald-700">{post.tb03_conteudo}</span>
               </div>
             )}

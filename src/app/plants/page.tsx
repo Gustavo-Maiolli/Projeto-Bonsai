@@ -18,7 +18,7 @@ export default async function PlantsPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id_usuario", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id", user.id).maybeSingle()
 
   const { data: plants } = await supabase
     .from("tb02_plantas")
@@ -42,9 +42,9 @@ export default async function PlantsPage() {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-accent">
-                <AvatarImage src={profile?.tb01_url_avatar || undefined} />
+                <AvatarImage src={profile?.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-accent/10 text-accent">
-                  {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
+                  {profile?.tb01_nome?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -89,7 +89,7 @@ export default async function PlantsPage() {
                     <p className="text-sm text-muted-foreground truncate">{plant.tb02_especie}</p>
                     <div className="flex gap-2 mt-2 text-xs text-muted-foreground">
                       <span>Rega: {plant.tb02_frequencia_rega}d</span>
-                      {plant.tb02_frequencia_sol && <span>• Sol: {plant.tb02_frequencia_sol}d</span>}
+                      {plant.tb02_frequencia_sol && <span>• Sol: {plant.tb02_frequencia_sol}</span>}
                     </div>
                   </CardContent>
                 </Link>

@@ -104,18 +104,18 @@ export function SearchInterface({
                         <Card className="hover:shadow-lg transition-shadow">
                           <CardContent className="p-4 flex items-center gap-3">
                             <Avatar className="h-12 w-12">
-                              {/* Assumindo que avatar_url é user.tb01_url_avatar */}
-                              <AvatarImage src={user.tb01_url_avatar || undefined} />
+                              {/* Assumindo que avatar_url é user.tb01_avatar_url */}
+                              <AvatarImage src={user.tb01_avatar_url || undefined} />
                               <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                                {/* Assumindo que display_name é user.tb01_nome_exibicao */}
-                                {user.tb01_nome_exibicao.charAt(0).toUpperCase()}
+                                {/* Assumindo que display_name é user.tb01_nome */}
+                                {user.tb01_nome.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                              {/* Assumindo que display_name é user.tb01_nome_exibicao */}
-                              <p className="font-semibold text-emerald-900 truncate">{user.tb01_nome_exibicao}</p>
-                              {/* Assumindo que bio é user.tb01_biografia */}
-                              {user.tb01_biografia && <p className="text-sm text-muted-foreground truncate">{user.tb01_biografia}</p>}
+                              {/* Assumindo que display_name é user.tb01_nome */}
+                              <p className="font-semibold text-emerald-900 truncate">{user.tb01_nome}</p>
+                              {/* Assumindo que bio é user.tb01_bio */}
+                              {user.tb01_bio && <p className="text-sm text-muted-foreground truncate">{user.tb01_bio}</p>}
                             </div>
                           </CardContent>
                         </Card>
@@ -164,7 +164,7 @@ export function SearchInterface({
                             </h4>
                             <p className="text-sm text-muted-foreground truncate">{plant.tb02_especie}</p>
                             {/* Assumindo que a relação 'profiles' (tb01_perfis) está sendo carregada no backend */}
-                            <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.tb01_nome_exibicao}</p>
+                            <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.tb01_nome}</p>
                           </CardContent>
                         </Card>
                       </Link>
@@ -226,18 +226,18 @@ export function SearchInterface({
                       <Card className="hover:shadow-lg transition-shadow">
                         <CardContent className="p-4 flex items-center gap-3">
                           <Avatar className="h-12 w-12">
-                             {/* Assumindo que avatar_url é user.tb01_url_avatar */}
-                            <AvatarImage src={user.tb01_url_avatar || undefined} />
+                             {/* Assumindo que avatar_url é user.tb01_avatar_url */}
+                            <AvatarImage src={user.tb01_avatar_url || undefined} />
                             <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                              {/* Assumindo que display_name é user.tb01_nome_exibicao */}
-                              {user.tb01_nome_exibicao.charAt(0).toUpperCase()}
+                              {/* Assumindo que display_name é user.tb01_nome */}
+                              {user.tb01_nome.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            {/* Assumindo que display_name é user.tb01_nome_exibicao */}
-                            <p className="font-semibold text-emerald-900 truncate">{user.tb01_nome_exibicao}</p>
-                            {/* Assumindo que bio é user.tb01_biografia */}
-                            {user.tb01_biografia && <p className="text-sm text-muted-foreground truncate">{user.tb01_biografia}</p>}
+                            {/* Assumindo que display_name é user.tb01_nome */}
+                            <p className="font-semibold text-emerald-900 truncate">{user.tb01_nome}</p>
+                            {/* Assumindo que bio é user.tb01_bio */}
+                            {user.tb01_bio && <p className="text-sm text-muted-foreground truncate">{user.tb01_bio}</p>}
                           </div>
                         </CardContent>
                       </Card>
@@ -281,7 +281,7 @@ export function SearchInterface({
                           <h4 className="font-semibold text-emerald-900 truncate">{plant.tb02_apelido || plant.tb02_especie}</h4>
                           <p className="text-sm text-muted-foreground truncate">{plant.tb02_especie}</p>
                            {/* Assumindo que a relação 'profiles' (tb01_perfis) está sendo carregada no backend */}
-                          <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.tb01_nome_exibicao}</p>
+                          <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.tb01_nome}</p>
                         </CardContent>
                       </Card>
                     </Link>

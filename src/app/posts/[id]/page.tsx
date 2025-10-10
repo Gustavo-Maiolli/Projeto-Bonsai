@@ -24,7 +24,7 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   // Busca do perfil do usuário logado (usado no header)
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id_usuario", user.id).single()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id", user.id).single()
 
   // Busca da publicação com relações (joins)
   const { data: post, error } = await supabase
@@ -79,9 +79,9 @@ export default async function PostPage({ params }: PostPageProps) {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-emerald-600">
-                <AvatarImage src={profile?.tb01_url_avatar || undefined} />
+                <AvatarImage src={profile?.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                  {profile?.tb01_nome_exibicao.charAt(0).toUpperCase()}
+                  {profile?.tb01_nome.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </Link>
