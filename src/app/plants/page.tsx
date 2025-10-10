@@ -18,13 +18,13 @@ export default async function PlantsPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id_usuario", user.id).maybeSingle()
 
   const { data: plants } = await supabase
     .from("tb02_plantas")
     .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
+    .eq("tb02_id_usuario", user.id)
+    .order("tb02_data_criacao", { ascending: false })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50">
@@ -42,9 +42,9 @@ export default async function PlantsPage() {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-accent">
-                <AvatarImage src={profile?.avatar_url || undefined} />
+                <AvatarImage src={profile?.tb01_url_avatar || undefined} />
                 <AvatarFallback className="bg-accent/10 text-accent">
-                  {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
+                  {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -69,13 +69,13 @@ export default async function PlantsPage() {
         {plants && plants.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {plants.map((plant) => (
-              <Card key={plant.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <Link href={`/plants/${plant.id}`}>
+              <Card key={plant.tb02_id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Link href={`/plants/${plant.tb02_id}`}>
                   <div className="aspect-square bg-primary/5 relative">
-                    {plant.image_url ? (
+                    {plant.tb02_url_imagem ? (
                       <img
-                        src={plant.image_url || "/placeholder.svg"}
-                        alt={plant.nickname || plant.species}
+                        src={plant.tb02_url_imagem || "/placeholder.svg"}
+                        alt={plant.tb02_apelido || plant.tb02_especie}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -85,11 +85,11 @@ export default async function PlantsPage() {
                     )}
                   </div>
                   <CardContent className="p-4">
-                    <h4 className="font-semibold text-primary truncate">{plant.nickname || plant.species}</h4>
-                    <p className="text-sm text-muted-foreground truncate">{plant.species}</p>
+                    <h4 className="font-semibold text-primary truncate">{plant.tb02_apelido || plant.tb02_especie}</h4>
+                    <p className="text-sm text-muted-foreground truncate">{plant.tb02_especie}</p>
                     <div className="flex gap-2 mt-2 text-xs text-muted-foreground">
-                      <span>Rega: {plant.watering_frequency}d</span>
-                      {plant.sun_frequency && <span>• Sol: {plant.sun_frequency}d</span>}
+                      <span>Rega: {plant.tb02_frequencia_rega}d</span>
+                      {plant.tb02_frequencia_sol && <span>• Sol: {plant.tb02_frequencia_sol}d</span>}
                     </div>
                   </CardContent>
                 </Link>

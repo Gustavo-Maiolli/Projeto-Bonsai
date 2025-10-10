@@ -21,7 +21,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
+  // Busca do perfil do usuário logado (para o header)
+  const { data: profile } = await supabase
+    .from("tb01_perfis")
+    .select("*")
+    .eq("tb01_id_usuario", user.id) // Usando tb01_id_usuario
+    .maybeSingle()
 
   const query = params.q || ""
   const searchType = params.type || "all"
@@ -31,73 +36,84 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   let posts: any[] = []
 
   if (query) {
-    // Search users
+    // Search users (tb01_perfis)
     if (searchType === "all" || searchType === "users") {
-      const { data } = await supabase.from("tb01_perfis").select("*").ilike("display_name", `%${query}%`).limit(20)
+      const { data } = await supabase
+        .from("tb01_perfis")
+        .select("*")
+        .ilike("tb01_nome_exibicao", `%${query}%`) // Usando tb01_nome_exibicao
+        .limit(20)
 
       users = data || []
     }
 
-    // Search plants
+    // Search plants (tb02_plantas)
     if (searchType === "all" || searchType === "plants") {
       const { data: plantsData } = await supabase
         .from("tb02_plantas")
         .select("*")
-        .eq("is_public", true)
-        .or(`species.ilike.%${query}%,nickname.ilike.%${query}%`)
+        .eq("tb02_publica", true) // Usando tb02_publica
+        .or(`tb02_especie.ilike.%${query}%,tb02_apelido.ilike.%${query}%`) // Usando tb02_especie, tb02_apelido
         .limit(20)
 
       if (plantsData && plantsData.length > 0) {
         // Get unique user IDs
-        const userIds = [...new Set(plantsData.map((p) => p.user_id))]
+        const userIds = [...new Set(plantsData.map((p) => p.tb02_id_usuario))] // Usando tb02_id_usuario
 
         // Fetch profiles for these users
-        const { data: profilesData } = await supabase.from("tb01_perfis").select("*").in("id", userIds)
+        const { data: profilesData } = await supabase
+          .from("tb01_perfis")
+          .select("*")
+          .in("tb01_id_usuario", userIds) // Usando tb01_id_usuario
 
         // Map profiles to plants
         plants = plantsData.map((plant) => ({
           ...plant,
-          profiles: profilesData?.find((p) => p.id === plant.user_id),
+          // Mapeando para o campo de ID correto
+          profiles: profilesData?.find((p) => p.tb01_id_usuario === plant.tb02_id_usuario),
         }))
       }
     }
 
-    // Search posts
+    // Search posts (tb03_publicacoes)
     if (searchType === "all" || searchType === "posts") {
       const { data: postsData } = await supabase
         .from("tb03_publicacoes")
         .select(
           `
           *,
-          plants!inner(
-            id,
-            species,
-            nickname,
-            is_public,
-            user_id
+          tb02_plantas!inner(             // Relação com tb02_plantas
+            tb02_id,
+            tb02_especie,
+            tb02_apelido,
+            tb02_publica,
+            tb02_id_usuario
           ),
-          profiles!posts_user_id_fkey(
-            id,
-            display_name,
-            avatar_url
+          tb01_perfis!tb03_id_usuario_fkey(  // Relação com tb01_perfis (Autor)
+            tb01_id_usuario,
+            tb01_nome_exibicao,
+            tb01_url_avatar
           ),
-          likes(id, user_id),
-          comments(id)
+          tb04_curtidas(tb04_id, tb04_id_usuario), // Relação de likes
+          tb05_comentarios(tb05_id)          // Relação de comentários
         `,
         )
-        .eq("plants.is_public", true)
-        .ilike("description", `%${query}%`)
-        .order("created_at", { ascending: false })
+        // Filtra posts apenas de plantas públicas (usando o alias da coluna da planta)
+        .eq("tb02_plantas.tb02_publica", true) 
+        .ilike("tb03_conteudo", `%${query}%`) // Usando tb03_conteudo (assumindo que o campo 'description' anterior era o conteúdo do post)
+        .order("tb03_data_criacao", { ascending: false }) // Usando tb03_data_criacao
         .limit(20)
 
       posts =
-        postsData?.map((post) => ({
+        postsData?.map((post: any) => ({ // Tipagem 'any' temporária para facilitar o mapeamento
           ...post,
           _count: {
-            likes: post.likes?.length || 0,
-            comments: post.comments?.length || 0,
+            // Usando as novas relações
+            likes: post.tb04_curtidas?.length || 0,
+            comments: post.tb05_comentarios?.length || 0,
           },
-          isLikedByUser: post.likes?.some((like: any) => like.user_id === user.id) || false,
+          // Usando a nova coluna de ID do usuário no like
+          isLikedByUser: post.tb04_curtidas?.some((like: any) => like.tb04_id_usuario === user.id) || false,
         })) || []
     }
   }
@@ -113,9 +129,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </Link>
           <Link href={`/profile/${user.id}`}>
             <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-emerald-600">
-              <AvatarImage src={profile?.avatar_url || undefined} />
+              {/* Usando tb01_url_avatar */}
+              <AvatarImage src={profile?.tb01_url_avatar || undefined} />
               <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                {profile?.display_name?.charAt(0).toUpperCase() || "U"}
+                {/* Usando tb01_nome_exibicao */}
+                {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
           </Link>

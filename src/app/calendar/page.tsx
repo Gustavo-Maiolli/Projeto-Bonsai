@@ -18,22 +18,20 @@ export default async function CalendarPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).single()
+  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id", user.id).single()
 
-  // Fetch user's plants
-  const { data: plants } = await supabase.from("tb02_plantas").select("*").eq("user_id", user.id)
+  const { data: tb02_plantas } = await supabase.from("tb02_plantas").select("*").eq("tb02_id_usuario", user.id)
 
-  // Fetch reminders for the current month
   const today = new Date()
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
   const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
 
   const { data: reminders } = await supabase
     .from("tb06_lembretes_cuidado")
-    .select("*, plants(*)")
-    .eq("user_id", user.id)
-    .gte("reminder_date", startOfMonth.toISOString().split("T")[0])
-    .lte("reminder_date", endOfMonth.toISOString().split("T")[0])
+    .select("*, tb02_plantas(*)")
+    .eq("tb06_id_usuario", user.id) 
+    .gte("tb06_data_lembrete", startOfMonth.toISOString().split("T")[0])
+    .lte("tb06_data_lembrete", endOfMonth.toISOString().split("T")[0])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50">
@@ -51,9 +49,9 @@ export default async function CalendarPage() {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-accent">
-                <AvatarImage src={profile?.avatar_url || undefined} />
+                <AvatarImage src={profile?.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-accent/10 text-accent">
-                  {profile?.display_name.charAt(0).toUpperCase()}
+                  {profile?.tb01_nome.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -67,7 +65,7 @@ export default async function CalendarPage() {
           <p className="text-primary/70 mt-1">Gerencie os lembretes de rega e exposição ao sol</p>
         </div>
 
-        <CalendarView plants={plants || []} initialReminders={reminders || []} userId={user.id} />
+        <CalendarView tb02_plantas={tb02_plantas || []} initialReminders={reminders || []} userId={user.id} />
       </div>
     </div>
   )

@@ -16,13 +16,15 @@ import type { Plant } from "@/lib/types"
 
 interface PostFormProps {
   userId: string
-  plant: Plant
+  plant: Plant // O objeto Plant deve ter as chaves tb02_id, tb02_apelido, tb02_especie
 }
 
 export function PostForm({ userId, plant }: PostFormProps) {
   const router = useRouter()
 
+  // Mapeado para tb03_conteudo
   const [description, setDescription] = useState("")
+  // Mapeado para tb03_url_imagem
   const [imageUrl, setImageUrl] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -40,6 +42,7 @@ export function PostForm({ userId, plant }: PostFormProps) {
       const fileExt = file.name.split(".").pop()
       const fileName = `${userId}-${Date.now()}.${fileExt}`
 
+      // O nome do bucket 'tb03_publicacoes' é mantido
       const { data, error: uploadError } = await supabase.storage.from("tb03_publicacoes").upload(fileName, file, { upsert: true })
 
       if (uploadError) throw uploadError
@@ -73,17 +76,19 @@ export function PostForm({ userId, plant }: PostFormProps) {
       const { data, error: insertError } = await supabase
         .from("tb03_publicacoes")
         .insert({
-          user_id: userId,
-          plant_id: plant.id,
-          image_url: imageUrl,
-          description: description || null,
+          // Campos atualizados para a nomenclatura tb03_
+          tb03_id_usuario: userId,
+          tb03_id_planta: plant.tb02_id, // Assumindo que o ID da planta está em plant.tb02_id
+          tb03_url_imagem: imageUrl,
+          tb03_conteudo: description || null, // Mapeado de 'description'
         })
         .select()
         .single()
 
       if (insertError) throw insertError
 
-      router.push(`/posts/${data.id}`)
+      // Redireciona para o post usando o novo ID tb03_id
+      router.push(`/posts/${data.tb03_id}`)
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao criar post")
@@ -109,7 +114,8 @@ export function PostForm({ userId, plant }: PostFormProps) {
           <CardHeader>
             <CardTitle className="text-2xl text-emerald-900">Novo Post</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Compartilhe a evolução de <span className="font-semibold">{plant.nickname || plant.species}</span>
+              {/* Usando tb02_apelido ou tb02_especie */}
+              Compartilhe a evolução de <span className="font-semibold">{plant.tb02_apelido || plant.tb02_especie}</span>
             </p>
           </CardHeader>
           <CardContent>
@@ -128,7 +134,7 @@ export function PostForm({ userId, plant }: PostFormProps) {
                     <div className="flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700">
                       {uploadingImage ? (
                         <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                           Enviando...
                         </>
                       ) : (

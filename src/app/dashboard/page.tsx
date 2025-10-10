@@ -18,13 +18,17 @@ export default async function DashboardPage() {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
+  const { data: profile } = await supabase
+    .from("tb01_perfis")
+    .select("*")
+    .eq("tb01_id_usuario", user.id)
+    .maybeSingle()
 
-  const { data: plants } = await supabase
+  const { data: tb02_plantas } = await supabase
     .from("tb02_plantas")
     .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
+    .eq("tb02_id_usuario", user.id)
+    .order("tb02_data_criacao", { ascending: false })
     .limit(6)
 
   return (
@@ -43,9 +47,9 @@ export default async function DashboardPage() {
             </Button>
             <Link href={`/profile/${user.id}`}>
               <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-accent">
-                <AvatarImage src={profile?.avatar_url || undefined} />
+                <AvatarImage src={profile?.tb01_url_avatar || undefined} />
                 <AvatarFallback className="bg-accent/10 text-accent">
-                  {profile?.display_name?.charAt(0).toUpperCase() || "U"}
+                  {profile?.tb01_nome_exibicao?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -56,7 +60,7 @@ export default async function DashboardPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-primary mb-2">Olá, {profile?.display_name || "Usuário"}!</h2>
+          <h2 className="text-3xl font-bold text-primary mb-2">Olá, {profile?.tb01_nome_exibicao || "Usuário"}!</h2>
           <p className="text-primary/70">Bem-vindo ao seu painel de cuidados com bonsais</p>
         </div>
 
@@ -81,7 +85,7 @@ export default async function DashboardPage() {
                   <Leaf className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-semibold text-primary">Minhas Plantas</h3>
-                <p className="text-sm text-muted-foreground mt-1">{plants?.length || 0} plantas</p>
+                <p className="text-sm text-muted-foreground mt-1">{tb02_plantas?.length || 0} plantas</p>
               </CardContent>
             </Link>
           </Card>
@@ -120,16 +124,16 @@ export default async function DashboardPage() {
             </Button>
           </div>
 
-          {plants && plants.length > 0 ? (
+          {tb02_plantas && tb02_plantas.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {plants.map((plant) => (
-                <Card key={plant.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <Link href={`/plants/${plant.id}`}>
+              {tb02_plantas.map((plant) => (
+                <Card key={plant.tb02_id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Link href={`/plants/${plant.tb02_id}`}>
                     <div className="aspect-square bg-primary/5 relative">
-                      {plant.image_url ? (
+                      {plant.tb02_url_imagem ? (
                         <img
-                          src={plant.image_url || "/placeholder.svg"}
-                          alt={plant.nickname || plant.species}
+                          src={plant.tb02_url_imagem || "/placeholder.svg"}
+                          alt={plant.tb02_apelido || plant.tb02_especie}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -139,8 +143,8 @@ export default async function DashboardPage() {
                       )}
                     </div>
                     <CardContent className="p-4">
-                      <h4 className="font-semibold text-primary">{plant.nickname || plant.species}</h4>
-                      <p className="text-sm text-muted-foreground">{plant.species}</p>
+                      <h4 className="font-semibold text-primary">{plant.tb02_apelido || plant.tb02_especie}</h4>
+                      <p className="text-sm text-muted-foreground">{plant.tb02_especie}</p>
                     </CardContent>
                   </Link>
                 </Card>

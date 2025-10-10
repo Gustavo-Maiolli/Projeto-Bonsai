@@ -31,8 +31,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const isOwnProfile = user?.id === id
 
-  // Fetch profile data
-  const { data: profile, error: profileError } = await supabase.from("tb01_perfis").select("*").eq("id", id).maybeSingle()
+  // Fetch profile data - Usando tb01_id_usuario
+  const { data: profile, error: profileError } = await supabase
+    .from("tb01_perfis")
+    .select("*")
+    .eq("tb01_id_usuario", id)
+    .maybeSingle()
 
   console.log(" Profile data:", profile ? "found" : "not found", "Error:", profileError?.message || "none")
 
@@ -40,12 +44,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     // If it's the user's own profile and doesn't exist, create it or redirect to edit
     if (isOwnProfile && user) {
       console.log(" Creating profile for user:", user.id)
-      // Try to create the profile
+      // Try to create the profile - Usando a nomenclatura tb01_
       const { error: insertError } = await supabase.from("tb01_perfis").insert({
-        id: user.id,
-        display_name: user.email?.split("@")[0] || "Usuário",
-        bio: null,
-        avatar_url: null,
+        tb01_id_usuario: user.id,
+        tb01_nome_exibicao: user.email?.split("@")[0] || "Usuário",
+        tb01_biografia: null,
+        tb01_url_avatar: null,
       })
 
       // If creation succeeded, redirect to edit page to complete profile
@@ -62,13 +66,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  // Fetch user's plants
+  // Fetch user's plants - Usando tb02_id_usuario, tb02_publica e tb02_data_criacao
   const { data: plants } = await supabase
     .from("tb02_plantas")
     .select("*")
-    .eq("user_id", id)
-    .eq("is_public", true)
-    .order("created_at", { ascending: false })
+    .eq("tb02_id_usuario", id)
+    .eq("tb02_publica", true)
+    .order("tb02_data_criacao", { ascending: false })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
@@ -94,19 +98,23 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-6 items-start">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={profile.avatar_url || undefined} />
+                {/* Usando tb01_url_avatar */}
+                <AvatarImage src={profile.tb01_url_avatar || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl">
-                  {profile.display_name.charAt(0).toUpperCase()}
+                  {/* Usando tb01_nome_exibicao */}
+                  {profile.tb01_nome_exibicao.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <h2 className="text-2xl font-bold text-emerald-900">{profile.display_name}</h2>
+                    {/* Usando tb01_nome_exibicao */}
+                    <h2 className="text-2xl font-bold text-emerald-900">{profile.tb01_nome_exibicao}</h2>
                     <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                       <Calendar className="h-4 w-4" />
                       Membro desde{" "}
-                      {new Date(profile.created_at).toLocaleDateString("pt-BR", {
+                      {/* Usando tb01_data_criacao */}
+                      {new Date(profile.tb01_data_criacao).toLocaleDateString("pt-BR", {
                         month: "long",
                         year: "numeric",
                       })}
@@ -121,7 +129,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     </Button>
                   )}
                 </div>
-                {profile.bio && <p className="text-emerald-700 mt-3">{profile.bio}</p>}
+                {/* Usando tb01_biografia */}
+                {profile.tb01_biografia && <p className="text-emerald-700 mt-3">{profile.tb01_biografia}</p>}
                 <div className="flex gap-4 mt-4 text-sm">
                   <div>
                     <span className="font-semibold text-emerald-900">{plants?.length || 0}</span>{" "}
@@ -136,16 +145,18 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         {/* Plants Grid */}
         <div>
           <h3 className="text-xl font-semibold text-emerald-900 mb-4">{isOwnProfile ? "Minhas Plantas" : "Plantas"}</h3>
+          {/* Corrigido o nome da variável de array de tb02_plantas para plants */}
           {plants && plants.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {plants.map((plant) => (
-                <Card key={plant.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <Link href={`/plants/${plant.id}`}>
+                <Card key={plant.tb02_id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Link href={`/plants/${plant.tb02_id}`}>
                     <div className="aspect-square bg-emerald-100 relative">
-                      {plant.image_url ? (
+                      {/* Usando tb02_url_imagem, tb02_apelido, tb02_especie */}
+                      {plant.tb02_url_imagem ? (
                         <img
-                          src={plant.image_url || "/placeholder.svg"}
-                          alt={plant.nickname || plant.species}
+                          src={plant.tb02_url_imagem || "/placeholder.svg"}
+                          alt={plant.tb02_apelido || plant.tb02_especie}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -155,8 +166,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                       )}
                     </div>
                     <CardContent className="p-4">
-                      <h4 className="font-semibold text-emerald-900">{plant.nickname || plant.species}</h4>
-                      <p className="text-sm text-muted-foreground">{plant.species}</p>
+                      {/* Usando tb02_apelido, tb02_especie */}
+                      <h4 className="font-semibold text-emerald-900">{plant.tb02_apelido || plant.tb02_especie}</h4>
+                      <p className="text-sm text-muted-foreground">{plant.tb02_especie}</p>
                     </CardContent>
                   </Link>
                 </Card>

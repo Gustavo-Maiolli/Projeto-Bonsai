@@ -18,7 +18,7 @@ export default async function EditPlantPage({ params }: EditPlantPageProps) {
     redirect("/auth/login")
   }
 
-  const { data: plant, error } = await supabase.from("tb02_plantas").select("*").eq("id", id).eq("user_id", user.id).single()
+  const { data: plant, error } = await supabase.from("tb02_plantas").select("*").eq("tb02_id", id).eq("tb02_id_usuario", user.id).single()
 
   if (error || !plant) {
     notFound()

@@ -30,10 +30,12 @@ export function DeletePlantButton({ plantId }: DeletePlantButtonProps) {
 
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
-      const { error } = await supabase.from("tb02_plantas").delete().eq("id", plantId)
+      // Ação de exclusão: Usando tb02_id
+      const { error } = await supabase.from("tb02_plantas").delete().eq("tb02_id", plantId)
 
       if (error) throw error
 
+      // Redireciona para a lista de plantas após a exclusão bem-sucedida
       window.location.href = "/plants"
     } catch (error) {
       console.error("Error deleting plant:", error)

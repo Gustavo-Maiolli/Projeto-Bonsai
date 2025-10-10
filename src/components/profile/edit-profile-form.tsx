@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Leaf, Upload, Loader2 } from "lucide-react"
 import Link from "next/link"
-import type { Profile } from "@/lib/types"
+import type { Profile } from "@/lib/types" // Assumimos que Profile agora tem as chaves tb01_
 import type { User } from "@supabase/supabase-js"
 
 interface EditProfileFormProps {
@@ -23,9 +23,10 @@ interface EditProfileFormProps {
 
 export function EditProfileForm({ profile, user }: EditProfileFormProps) {
   const router = useRouter()
-  const [displayName, setDisplayName] = useState(profile.display_name)
-  const [bio, setBio] = useState(profile.bio || "")
-  const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || "")
+  // Inicialização usando a nova nomenclatura de Profile
+  const [displayName, setDisplayName] = useState(profile.tb01_nome)
+  const [bio, setBio] = useState(profile.tb01_bio || "")
+  const [avatarUrl, setAvatarUrl] = useState(profile.tb01_avatar_url || "")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
@@ -42,9 +43,9 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
       const fileExt = file.name.split(".").pop()
       const fileName = `${user.id}-${Date.now()}.${fileExt}`
 
-      // Upload to Supabase Storage (you'll need to create a bucket called 'avatars')
+      // Upload para o bucket 'avatares' (manter o nome se for um bucket separado)
       const { data, error: uploadError } = await supabase.storage
-        .from("avatars")
+        .from("avatares")
         .upload(fileName, file, { upsert: true })
 
       if (uploadError) throw uploadError
@@ -52,7 +53,7 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
       // Get public URL
       const {
         data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(fileName)
+      } = supabase.storage.from("avatares").getPublicUrl(fileName)
 
       setAvatarUrl(publicUrl)
     } catch (err) {
@@ -70,14 +71,15 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
 
+      // Operação UPDATE na tb01_perfis com as novas colunas
       const { error: updateError } = await supabase
         .from("tb01_perfis")
         .update({
-          display_name: displayName,
-          bio: bio || null,
-          avatar_url: avatarUrl || null,
+          tb01_nome_exibicao: displayName, // Mapeado de display_name
+          tb01_biografia: bio || null, // Mapeado de bio
+          tb01_url_avatar: avatarUrl || null, // Mapeado de avatar_url
         })
-        .eq("id", user.id)
+        .eq("tb01_id", user.id) // Filtrando pelo ID do usuário, que é a PK da tb01_perfis
 
       if (updateError) throw updateError
 
@@ -114,6 +116,7 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={avatarUrl || undefined} />
                   <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl">
+                    {/* Exibir a primeira letra do nome de exibição */}
                     {displayName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>

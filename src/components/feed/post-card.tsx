@@ -21,36 +21,42 @@ import {
 } from "@/components/ui/alert-dialog"
 
 interface PostCardProps {
-  post: any
+  post: any // O objeto post agora deve conter a nova nomenclatura de chaves
   currentUserId: string
   showActions?: boolean
 }
 
 export function PostCard({ post, currentUserId, showActions = false }: PostCardProps) {
   const router = useRouter()
+  // As propriedades isLikedByUser e _count.likes vêm do fetch inicial, que já foi corrigido no SearchPage/FeedPage
   const [isLiked, setIsLiked] = useState(post.isLikedByUser)
   const [likeCount, setLikeCount] = useState(post._count.likes)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-  const isOwner = post.user_id === currentUserId
+  // Checa se o usuário logado é o dono do post
+  const isOwner = post.tb03_id_usuario === currentUserId
 
   const handleLike = async () => {
     const supabase = createBrowserSupabaseClientForFrontend()
 
     if (isLiked) {
-      // Unlike
-      const { error } = await supabase.from("tb04_curtidas").delete().eq("post_id", post.id).eq("user_id", currentUserId)
+      // Unlike - Usando tb04_id_publicacao e tb04_id_usuario
+      const { error } = await supabase
+        .from("tb04_curtidas")
+        .delete()
+        .eq("tb04_id_publicacao", post.tb03_id)
+        .eq("tb04_id_usuario", currentUserId)
 
       if (!error) {
         setIsLiked(false)
         setLikeCount((prev: number) => prev - 1)
       }
     } else {
-      // Like
+      // Like - Usando tb04_id_publicacao e tb04_id_usuario
       const { error } = await supabase.from("tb04_curtidas").insert({
-        post_id: post.id,
-        user_id: currentUserId,
+        tb04_id_publicacao: post.tb03_id,
+        tb04_id_usuario: currentUserId,
       })
 
       if (!error) {
@@ -65,7 +71,8 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
 
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
-      const { error } = await supabase.from("tb03_publicacoes").delete().eq("id", post.id)
+      // Exclusão do post - Usando tb03_id
+      const { error } = await supabase.from("tb03_publicacoes").delete().eq("tb03_id", post.tb03_id)
 
       if (error) throw error
 
@@ -80,23 +87,33 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
     }
   }
 
+  // Desestruturando o perfil e a planta para facilitar a leitura do JSX
+  const userProfile = post.tb01_perfis
+  const plantData = post.tb02_plantas
+
   return (
     <>
       <Card>
         <CardContent className="p-0">
           {/* Header */}
           <div className="p-4 flex items-center justify-between">
-            <Link href={`/profile/${post.user_id}`} className="flex items-center gap-3 hover:opacity-80">
+            {/* Link para o perfil - Usando tb03_id_usuario */}
+            <Link href={`/profile/${post.tb03_id_usuario}`} className="flex items-center gap-3 hover:opacity-80">
               <Avatar>
-                <AvatarImage src={post.profiles?.avatar_url || undefined} />
+                {/* Usando tb01_url_avatar */}
+                <AvatarImage src={userProfile?.tb01_url_avatar || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                  {post.profiles?.display_name.charAt(0).toUpperCase()}
+                  {/* Usando tb01_nome_exibicao */}
+                  {userProfile?.tb01_nome_exibicao.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold text-emerald-900">{post.profiles?.display_name}</p>
-                <Link href={`/plants/${post.plant_id}`} className="text-sm text-muted-foreground hover:underline">
-                  {post.plants?.nickname || post.plants?.species}
+                {/* Usando tb01_nome_exibicao */}
+                <p className="font-semibold text-emerald-900">{userProfile?.tb01_nome_exibicao}</p>
+                {/* Link para a planta - Usando tb02_id */}
+                <Link href={`/plants/${plantData?.tb02_id}`} className="text-sm text-muted-foreground hover:underline">
+                  {/* Usando tb02_apelido ou tb02_especie */}
+                  {plantData?.tb02_apelido || plantData?.tb02_especie}
                 </Link>
               </div>
             </Link>
@@ -120,7 +137,8 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
 
           {/* Image */}
           <div className="aspect-square bg-emerald-100 relative">
-            <img src={post.image_url || "/placeholder.svg"} alt="Post" className="w-full h-full object-cover" />
+            {/* Usando tb03_url_imagem */}
+            <img src={post.tb03_url_imagem || "/placeholder.svg"} alt="Post" className="w-full h-full object-cover" />
           </div>
 
           {/* Actions */}
@@ -130,7 +148,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
                 <Heart className={`h-6 w-6 ${isLiked ? "fill-red-500 text-red-500" : "text-emerald-900"}`} />
               </Button>
               {!showActions && (
-                <Link href={`/posts/${post.id}`}>
+                <Link href={`/posts/${post.tb03_id}`}>
                   <Button variant="ghost" size="sm" className="p-0 h-auto hover:bg-transparent">
                     <MessageCircle className="h-6 w-6 text-emerald-900" />
                   </Button>
@@ -142,21 +160,24 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
               <p className="font-semibold text-sm text-emerald-900">{likeCount} curtidas</p>
             </div>
 
-            {post.description && (
+            {/* Usando tb03_conteudo */}
+            {post.tb03_conteudo && (
               <div>
-                <span className="font-semibold text-emerald-900">{post.profiles?.display_name}</span>{" "}
-                <span className="text-emerald-700">{post.description}</span>
+                {/* Usando tb01_nome_exibicao */}
+                <span className="font-semibold text-emerald-900">{userProfile?.tb01_nome_exibicao}</span>{" "}
+                <span className="text-emerald-700">{post.tb03_conteudo}</span>
               </div>
             )}
 
             {!showActions && post._count.comments > 0 && (
-              <Link href={`/posts/${post.id}`} className="text-sm text-muted-foreground hover:underline block">
+              <Link href={`/posts/${post.tb03_id}`} className="text-sm text-muted-foreground hover:underline block">
                 Ver todos os {post._count.comments} comentários
               </Link>
             )}
 
             <p className="text-xs text-muted-foreground">
-              {new Date(post.created_at).toLocaleDateString("pt-BR", {
+              {/* Usando tb03_data_criacao */}
+              {new Date(post.tb03_data_criacao).toLocaleDateString("pt-BR", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",

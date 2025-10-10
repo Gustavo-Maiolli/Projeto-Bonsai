@@ -13,27 +13,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Leaf, Upload, Loader2 } from "lucide-react"
 import Link from "next/link"
-import type { Plant } from "@/lib/types"
+import type { Plant } from "@/lib/types" // Assumimos que Plant agora tem as chaves tb02_
 
 interface PlantFormProps {
   userId: string
-  plant?: Plant
+  plant?: Plant // O objeto Plant deve ter a nova nomenclatura tb02_
 }
 
 export function PlantForm({ userId, plant }: PlantFormProps) {
   const router = useRouter()
   const isEditing = !!plant
 
-  const [species, setSpecies] = useState(plant?.species || "")
-  const [nickname, setNickname] = useState(plant?.nickname || "")
-  const [location, setLocation] = useState(plant?.location || "")
-  const [temperature, setTemperature] = useState(plant?.temperature || "")
-  const [startDate, setStartDate] = useState(plant?.start_date || "")
-  const [wateringFrequency, setWateringFrequency] = useState(plant?.watering_frequency?.toString() || "")
-  const [sunFrequency, setSunFrequency] = useState(plant?.sun_frequency?.toString() || "")
-  const [careNotes, setCareNotes] = useState(plant?.care_notes || "")
-  const [imageUrl, setImageUrl] = useState(plant?.image_url || "")
-  const [isPublic, setIsPublic] = useState(plant?.is_public ?? true)
+  // Inicialização usando a nova nomenclatura de Plant (se for edição)
+  const [species, setSpecies] = useState(plant?.tb02_especie || "")
+  const [nickname, setNickname] = useState(plant?.tb02_apelido || "")
+  const [location, setLocation] = useState(plant?.tb02_localizacao || "")
+  const [temperature, setTemperature] = useState(plant?.tb02_temperatura || "")
+  const [startDate, setStartDate] = useState(plant?.tb02_data_inicio || "")
+  const [wateringFrequency, setWateringFrequency] = useState(plant?.tb02_frequencia_rega?.toString() || "")
+  const [sunFrequency, setSunFrequency] = useState(plant?.tb02_frequencia_sol?.toString() || "")
+  const [careNotes, setCareNotes] = useState(plant?.tb02_notas_cuidado || "")
+  const [imageUrl, setImageUrl] = useState(plant?.tb02_url_imagem || "")
+  const [isPublic, setIsPublic] = useState(plant?.tb02_publica ?? true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState(false)
@@ -50,6 +51,7 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
       const fileExt = file.name.split(".").pop()
       const fileName = `${userId}-${Date.now()}.${fileExt}`
 
+      // O bucket do storage para plantas é tb02_plantas
       const { data, error: uploadError } = await supabase.storage
         .from("tb02_plantas")
         .upload(fileName, file, { upsert: true })
@@ -78,34 +80,41 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
 
+      // 1. Mapeamento de dados para a nomenclatura tb02_
       const plantData = {
-        user_id: userId,
-        species,
-        nickname: nickname || null,
-        location: location || null,
-        temperature: temperature || null,
-        start_date: startDate,
-        watering_frequency: Number.parseInt(wateringFrequency),
-        sun_frequency: sunFrequency ? Number.parseInt(sunFrequency) : null,
-        care_notes: careNotes || null,
-        image_url: imageUrl || null,
-        is_public: isPublic,
+        tb02_id_usuario: userId,
+        tb02_especie: species,
+        tb02_apelido: nickname || null,
+        tb02_localizacao: location || null,
+        tb02_temperatura: temperature || null,
+        tb02_data_inicio: startDate,
+        tb02_frequencia_rega: Number.parseInt(wateringFrequency),
+        tb02_frequencia_sol: sunFrequency ? Number.parseInt(sunFrequency) : null,
+        tb02_notas_cuidado: careNotes || null,
+        tb02_url_imagem: imageUrl || null,
+        tb02_publica: isPublic,
       }
 
-      if (isEditing) {
-        const { error: updateError } = await supabase.from("tb02_plantas").update(plantData).eq("id", plant.id)
+      if (isEditing && plant) {
+        // 2. Operação UPDATE - Filtrando por tb02_id
+        const { error: updateError } = await supabase
+          .from("tb02_plantas")
+          .update(plantData)
+          .eq("tb02_id", plant.tb02_id)
 
         if (updateError) throw updateError
 
         alert("Planta atualizada com sucesso!")
-        router.push(`/plants/${plant.id}`)
+        router.push(`/plants/${plant.tb02_id}`)
       } else {
+        // 3. Operação INSERT
         const { data, error: insertError } = await supabase.from("tb02_plantas").insert(plantData).select().single()
 
         if (insertError) throw insertError
 
         alert(`${nickname || species} foi cadastrada com sucesso!`)
-        router.push(`/plants/${data.id}`)
+        // Redirecionando com o novo ID: data.tb02_id
+        router.push(`/plants/${data.tb02_id}`)
       }
 
       router.refresh()

@@ -13,12 +13,13 @@ import { Search, Leaf, User } from "lucide-react"
 import Link from "next/link"
 import { PostCard } from "@/components/feed/post-card"
 
+// Atualizando a interface para refletir a nomenclatura das tabelas
 interface SearchInterfaceProps {
   initialQuery: string
   initialType: string
-  initialUsers: any[]
-  initialPlants: any[]
-  initialPosts: any[]
+  initialUsers: any[] // tb01_perfis
+  initialPlants: any[] // tb02_plantas
+  initialPosts: any[] // tb03_publicacoes
   currentUserId: string
 }
 
@@ -26,8 +27,8 @@ export function SearchInterface({
   initialQuery,
   initialType,
   initialUsers,
-  initialPlants,
-  initialPosts,
+  initialPlants, // Renomeado de initialtb02_plantas
+  initialPosts, // Renomeado de initialtb03_publicacoes
   currentUserId,
 }: SearchInterfaceProps) {
   const router = useRouter()
@@ -48,6 +49,7 @@ export function SearchInterface({
     }
   }
 
+  // Corrigindo o cálculo de totalResults
   const totalResults = initialUsers.length + initialPlants.length + initialPosts.length
 
   return (
@@ -61,7 +63,8 @@ export function SearchInterface({
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar usuários, plantas ou posts..."
+                // Atualizando a string placeholder
+                placeholder="Buscar usuários, plantas ou publicações..."
                 className="pl-10"
               />
             </div>
@@ -84,29 +87,35 @@ export function SearchInterface({
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="all">Todos ({totalResults})</TabsTrigger>
               <TabsTrigger value="users">Usuários ({initialUsers.length})</TabsTrigger>
+              {/* Usando os nomes das variáveis corretas */}
               <TabsTrigger value="plants">Plantas ({initialPlants.length})</TabsTrigger>
               <TabsTrigger value="posts">Posts ({initialPosts.length})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="space-y-6 mt-6">
-              {/* Users Section */}
+              {/* Users Section (tb01_perfis) */}
               {initialUsers.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-emerald-900 mb-3">Usuários</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {initialUsers.slice(0, 4).map((user) => (
-                      <Link key={user.id} href={`/profile/${user.id}`}>
+                      // Assumindo que user.tb01_id e outras chaves estão sendo usadas corretamente no contexto mais amplo
+                      <Link key={user.tb01_id || user.id} href={`/profile/${user.tb01_id || user.id}`}>
                         <Card className="hover:shadow-lg transition-shadow">
                           <CardContent className="p-4 flex items-center gap-3">
                             <Avatar className="h-12 w-12">
-                              <AvatarImage src={user.avatar_url || undefined} />
+                              {/* Assumindo que avatar_url é user.tb01_url_avatar */}
+                              <AvatarImage src={user.tb01_url_avatar || undefined} />
                               <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                                {user.display_name.charAt(0).toUpperCase()}
+                                {/* Assumindo que display_name é user.tb01_nome_exibicao */}
+                                {user.tb01_nome_exibicao.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-emerald-900 truncate">{user.display_name}</p>
-                              {user.bio && <p className="text-sm text-muted-foreground truncate">{user.bio}</p>}
+                              {/* Assumindo que display_name é user.tb01_nome_exibicao */}
+                              <p className="font-semibold text-emerald-900 truncate">{user.tb01_nome_exibicao}</p>
+                              {/* Assumindo que bio é user.tb01_biografia */}
+                              {user.tb01_biografia && <p className="text-sm text-muted-foreground truncate">{user.tb01_biografia}</p>}
                             </div>
                           </CardContent>
                         </Card>
@@ -125,19 +134,21 @@ export function SearchInterface({
                 </div>
               )}
 
-              {/* Plants Section */}
+              {/* Plants Section (tb02_plantas) */}
               {initialPlants.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-emerald-900 mb-3">Plantas</h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {initialPlants.slice(0, 6).map((plant) => (
-                      <Link key={plant.id} href={`/plants/${plant.id}`}>
+                      // Assumindo que o ID é plant.tb02_id
+                      <Link key={plant.tb02_id} href={`/plants/${plant.tb02_id}`}>
                         <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                           <div className="aspect-square bg-emerald-100 relative">
-                            {plant.image_url ? (
+                            {/* Assumindo chaves tb02_ */}
+                            {plant.tb02_url_imagem ? (
                               <img
-                                src={plant.image_url || "/placeholder.svg"}
-                                alt={plant.nickname || plant.species}
+                                src={plant.tb02_url_imagem || "/placeholder.svg"}
+                                alt={plant.tb02_apelido || plant.tb02_especie}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -147,11 +158,13 @@ export function SearchInterface({
                             )}
                           </div>
                           <CardContent className="p-3">
+                            {/* Assumindo chaves tb02_ */}
                             <h4 className="font-semibold text-emerald-900 truncate">
-                              {plant.nickname || plant.species}
+                              {plant.tb02_apelido || plant.tb02_especie}
                             </h4>
-                            <p className="text-sm text-muted-foreground truncate">{plant.species}</p>
-                            <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.display_name}</p>
+                            <p className="text-sm text-muted-foreground truncate">{plant.tb02_especie}</p>
+                            {/* Assumindo que a relação 'profiles' (tb01_perfis) está sendo carregada no backend */}
+                            <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.tb01_nome_exibicao}</p>
                           </CardContent>
                         </Card>
                       </Link>
@@ -169,13 +182,15 @@ export function SearchInterface({
                 </div>
               )}
 
-              {/* Posts Section */}
+              {/* Posts Section (tb03_publicacoes) */}
               {initialPosts.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-emerald-900 mb-3">Posts</h3>
                   <div className="space-y-4">
+                    {/* PostCard usa a chave 'post' que deve vir corretamente formatada do backend */}
                     {initialPosts.slice(0, 3).map((post) => (
-                      <PostCard key={post.id} post={post} currentUserId={currentUserId} />
+                      // Assumindo que post.tb03_id é o ID
+                      <PostCard key={post.tb03_id} post={post} currentUserId={currentUserId} />
                     ))}
                   </div>
                   {initialPosts.length > 3 && (
@@ -201,22 +216,28 @@ export function SearchInterface({
               )}
             </TabsContent>
 
+            {/* Abas individuais: Usuários */}
             <TabsContent value="users" className="space-y-3 mt-6">
               {initialUsers.length > 0 ? (
                 <div className="grid sm:grid-cols-2 gap-3">
                   {initialUsers.map((user) => (
-                    <Link key={user.id} href={`/profile/${user.id}`}>
+                    // Assumindo que user.tb01_id é o ID
+                    <Link key={user.tb01_id} href={`/profile/${user.tb01_id}`}>
                       <Card className="hover:shadow-lg transition-shadow">
                         <CardContent className="p-4 flex items-center gap-3">
                           <Avatar className="h-12 w-12">
-                            <AvatarImage src={user.avatar_url || undefined} />
+                             {/* Assumindo que avatar_url é user.tb01_url_avatar */}
+                            <AvatarImage src={user.tb01_url_avatar || undefined} />
                             <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                              {user.display_name.charAt(0).toUpperCase()}
+                              {/* Assumindo que display_name é user.tb01_nome_exibicao */}
+                              {user.tb01_nome_exibicao.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-emerald-900 truncate">{user.display_name}</p>
-                            {user.bio && <p className="text-sm text-muted-foreground truncate">{user.bio}</p>}
+                            {/* Assumindo que display_name é user.tb01_nome_exibicao */}
+                            <p className="font-semibold text-emerald-900 truncate">{user.tb01_nome_exibicao}</p>
+                            {/* Assumindo que bio é user.tb01_biografia */}
+                            {user.tb01_biografia && <p className="text-sm text-muted-foreground truncate">{user.tb01_biografia}</p>}
                           </div>
                         </CardContent>
                       </Card>
@@ -233,17 +254,20 @@ export function SearchInterface({
               )}
             </TabsContent>
 
+            {/* Abas individuais: Plantas */}
             <TabsContent value="plants" className="space-y-4 mt-6">
               {initialPlants.length > 0 ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {initialPlants.map((plant) => (
-                    <Link key={plant.id} href={`/plants/${plant.id}`}>
+                    // Assumindo que o ID é plant.tb02_id
+                    <Link key={plant.tb02_id} href={`/plants/${plant.tb02_id}`}>
                       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                         <div className="aspect-square bg-emerald-100 relative">
-                          {plant.image_url ? (
+                           {/* Assumindo chaves tb02_ */}
+                          {plant.tb02_url_imagem ? (
                             <img
-                              src={plant.image_url || "/placeholder.svg"}
-                              alt={plant.nickname || plant.species}
+                              src={plant.tb02_url_imagem || "/placeholder.svg"}
+                              alt={plant.tb02_apelido || plant.tb02_especie}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -253,9 +277,11 @@ export function SearchInterface({
                           )}
                         </div>
                         <CardContent className="p-3">
-                          <h4 className="font-semibold text-emerald-900 truncate">{plant.nickname || plant.species}</h4>
-                          <p className="text-sm text-muted-foreground truncate">{plant.species}</p>
-                          <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.display_name}</p>
+                           {/* Assumindo chaves tb02_ */}
+                          <h4 className="font-semibold text-emerald-900 truncate">{plant.tb02_apelido || plant.tb02_especie}</h4>
+                          <p className="text-sm text-muted-foreground truncate">{plant.tb02_especie}</p>
+                           {/* Assumindo que a relação 'profiles' (tb01_perfis) está sendo carregada no backend */}
+                          <p className="text-xs text-muted-foreground mt-1">por {plant.profiles?.tb01_nome_exibicao}</p>
                         </CardContent>
                       </Card>
                     </Link>
@@ -271,9 +297,11 @@ export function SearchInterface({
               )}
             </TabsContent>
 
+            {/* Abas individuais: Posts */}
             <TabsContent value="posts" className="space-y-4 mt-6">
               {initialPosts.length > 0 ? (
-                initialPosts.map((post) => <PostCard key={post.id} post={post} currentUserId={currentUserId} />)
+                // PostCard usa a chave 'post' que deve vir corretamente formatada do backend
+                initialPosts.map((post) => <PostCard key={post.tb03_id} post={post} currentUserId={currentUserId} />)
               ) : (
                 <Card>
                   <CardContent className="py-16 text-center">

@@ -10,12 +10,14 @@ import type { Plant, CareReminder } from "@/lib/types"
 import { useRouter } from "next/navigation"
 
 interface CalendarViewProps {
-  plants: Plant[]
+  // CORRIGIDO: Nome da propriedade para tb02_plantas
+  tb02_plantas: Plant[]
   initialReminders: CareReminder[]
   userId: string
 }
 
-export function CalendarView({ plants, initialReminders, userId }: CalendarViewProps) {
+// CORRIGIDO: Desestruturação da prop
+export function CalendarView({ tb02_plantas, initialReminders, userId }: CalendarViewProps) {
   const router = useRouter()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [reminders, setReminders] = useState<CareReminder[]>(initialReminders)
@@ -32,10 +34,13 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
 
     const { data } = await supabase
       .from("tb06_lembretes_cuidado")
-      .select("*, plants(*)")
-      .eq("user_id", userId)
-      .gte("reminder_date", startOfMonth.toISOString().split("T")[0])
-      .lte("reminder_date", endOfMonth.toISOString().split("T")[0])
+      // CORRIGIDO: Relação aninhada
+      .select("*, tb02_plantas(*)") 
+      // CORRIGIDO: Coluna de filtro
+      .eq("tb06_id_usuario", userId)
+      // CORRIGIDO: Colunas de data
+      .gte("tb06_data_lembrete", startOfMonth.toISOString().split("T")[0])
+      .lte("tb06_data_lembrete", endOfMonth.toISOString().split("T")[0])
 
     if (data) {
       setReminders(data as CareReminder[])
@@ -47,35 +52,42 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
     const today = new Date()
     const remindersToCreate: any[] = []
 
-    for (const plant of plants) {
-      const startDate = new Date(plant.start_date)
+    // CORRIGIDO: Variável da prop
+    for (const plant of tb02_plantas) {
+      // CORRIGIDO: Nome da coluna
+      const startDate = new Date(plant.tb02_data_inicio) 
 
       // Generate watering reminders for next 60 days
-      for (let i = 0; i < 60; i += plant.watering_frequency) {
+      // CORRIGIDO: Nome da coluna
+      for (let i = 0; i < 60; i += plant.tb02_frequencia_rega) {
         const reminderDate = new Date(today)
         reminderDate.setDate(today.getDate() + i)
 
         remindersToCreate.push({
-          user_id: userId,
-          plant_id: plant.id,
-          reminder_date: reminderDate.toISOString().split("T")[0],
-          reminder_type: "watering",
-          completed: false,
+          // CORRIGIDO: Nomes das colunas de insert
+          tb06_id_usuario: userId,
+          tb06_id_planta: plant.tb02_id,
+          tb06_data_lembrete: reminderDate.toISOString().split("T")[0],
+          tb06_tipo_lembrete: "watering",
+          tb06_concluido: false,
         })
       }
 
       // Generate sun exposure reminders if configured
-      if (plant.sun_frequency) {
-        for (let i = 0; i < 60; i += plant.sun_frequency) {
+      // CORRIGIDO: Nome da coluna
+      if (plant.tb02_frequencia_sol) {
+        // CORRIGIDO: Nome da coluna
+        for (let i = 0; i < 60; i += plant.tb02_frequencia_sol) {
           const reminderDate = new Date(today)
           reminderDate.setDate(today.getDate() + i)
 
           remindersToCreate.push({
-            user_id: userId,
-            plant_id: plant.id,
-            reminder_date: reminderDate.toISOString().split("T")[0],
-            reminder_type: "sun",
-            completed: false,
+            // CORRIGIDO: Nomes das colunas de insert
+            tb06_id_usuario: userId,
+            tb06_id_planta: plant.tb02_id,
+            tb06_data_lembrete: reminderDate.toISOString().split("T")[0],
+            tb06_tipo_lembrete: "sun",
+            tb06_concluido: false,
           })
         }
       }
@@ -84,7 +96,8 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
     // Insert reminders (ignore conflicts)
     if (remindersToCreate.length > 0) {
       await supabase.from("tb06_lembretes_cuidado").upsert(remindersToCreate, {
-        onConflict: "user_id,plant_id,reminder_date,reminder_type",
+        // CORRIGIDO: Colunas de onConflict
+        onConflict: "tb06_id_usuario,tb06_id_planta,tb06_data_lembrete,tb06_tipo_lembrete",
         ignoreDuplicates: true,
       })
 
@@ -99,10 +112,12 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
     const { error } = await supabase
       .from("tb06_lembretes_cuidado")
       .update({
-        completed: !completed,
-        completed_at: !completed ? new Date().toISOString() : null,
+        // CORRIGIDO: Nomes das colunas de update
+        tb06_concluido: !completed,
+        tb06_data_conclusao: !completed ? new Date().toISOString() : null,
       })
-      .eq("id", reminderId)
+      // CORRIGIDO: Coluna de filtro
+      .eq("tb06_id", reminderId)
 
     if (!error) {
       await loadReminders()
@@ -123,7 +138,8 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
 
   const getRemindersForDate = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0]
-    return reminders.filter((r) => r.reminder_date === dateStr)
+    // CORRIGIDO: Nome da coluna de data
+    return reminders.filter((r) => r.tb06_data_lembrete === dateStr)
   }
 
   const previousMonth = () => {
@@ -194,19 +210,21 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
                   >
                     <div className="text-sm font-semibold text-emerald-900">{day}</div>
                     <div className="flex gap-1 justify-center mt-1">
-                      {dateReminders.some((r) => r.reminder_type === "watering") && (
+                      {/* CORRIGIDO: Acesso à coluna de tipo e conclusão */}
+                      {dateReminders.some((r) => r.tb06_tipo_lembrete === "watering") && (
                         <Droplet
                           className={`h-3 w-3 ${
-                            dateReminders.some((r) => r.reminder_type === "watering" && r.completed)
+                            dateReminders.some((r) => r.tb06_tipo_lembrete === "watering" && r.tb06_concluido)
                               ? "text-emerald-600 fill-emerald-600"
                               : "text-blue-400"
                           }`}
                         />
                       )}
-                      {dateReminders.some((r) => r.reminder_type === "sun") && (
+                      {/* CORRIGIDO: Acesso à coluna de tipo e conclusão */}
+                      {dateReminders.some((r) => r.tb06_tipo_lembrete === "sun") && (
                         <Sun
                           className={`h-3 w-3 ${
-                            dateReminders.some((r) => r.reminder_type === "sun" && r.completed)
+                            dateReminders.some((r) => r.tb06_tipo_lembrete === "sun" && r.tb06_concluido)
                               ? "text-emerald-600 fill-emerald-600"
                               : "text-yellow-400"
                           }`}
@@ -276,25 +294,28 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
               {selectedDateReminders.length > 0 ? (
                 <div className="space-y-3">
                   {selectedDateReminders.map((reminder) => (
-                    <div key={reminder.id} className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg">
+                    <div key={reminder.tb06_id} className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg">
                       <Checkbox
-                        checked={reminder.completed}
-                        onCheckedChange={() => toggleReminder(reminder.id, reminder.completed)}
+                        checked={reminder.tb06_concluido}
+                        onCheckedChange={() => toggleReminder(reminder.tb06_id, reminder.tb06_concluido)}
                         className="mt-1"
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          {reminder.reminder_type === "watering" ? (
+                          {/* CORRIGIDO: Acesso à coluna de tipo */}
+                          {reminder.tb06_tipo_lembrete === "watering" ? (
                             <Droplet className="h-4 w-4 text-blue-600" />
                           ) : (
                             <Sun className="h-4 w-4 text-yellow-600" />
                           )}
                           <span className="font-semibold text-sm text-emerald-900">
-                            {reminder.reminder_type === "watering" ? "Regar" : "Colocar no sol"}
+                            {/* CORRIGIDO: Acesso à coluna de tipo */}
+                            {reminder.tb06_tipo_lembrete === "watering" ? "Regar" : "Colocar no sol"}
                           </span>
                         </div>
                         <p className="text-sm text-emerald-700">
-                          {reminder.plants?.nickname || reminder.plants?.species}
+                          {/* CORRIGIDO: Acesso a plantas aninhadas */}
+                          {reminder.tb02_plantas?.tb02_apelido || reminder.tb02_plantas?.tb02_especie}
                         </p>
                       </div>
                     </div>
@@ -307,7 +328,7 @@ export function CalendarView({ plants, initialReminders, userId }: CalendarViewP
           </Card>
         )}
 
-        {plants.length === 0 && (
+        {tb02_plantas.length === 0 && (
           <Card>
             <CardContent className="py-8 text-center">
               <Leaf className="h-12 w-12 text-emerald-300 mx-auto mb-3" />

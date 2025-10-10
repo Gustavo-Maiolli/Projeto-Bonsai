@@ -18,17 +18,23 @@ export default async function EditProfilePage() {
 
   console.log(" User found:", user.id)
 
-  const { data: profile, error } = await supabase.from("tb01_perfis").select("*").eq("id", user.id).maybeSingle()
+  // 1. Busca do perfil existente - Usando tb01_id_usuario
+  const { data: profile, error } = await supabase
+    .from("tb01_perfis")
+    .select("*")
+    .eq("tb01_id_usuario", user.id)
+    .maybeSingle()
 
   console.log(" Profile data:", profile ? "found" : "not found", "Error:", error?.message || "none")
 
   if (!profile) {
     console.log(" Creating new profile for user")
+    // 2. Criação de novo perfil - Usando tb01_id_usuario e tb01_nome_exibicao
     const { data: newProfile, error: createError } = await supabase
       .from("tb01_perfis")
       .insert({
-        id: user.id,
-        display_name: user.email?.split("@")[0] || "Usuário",
+        tb01_id_usuario: user.id,
+        tb01_nome_exibicao: user.email?.split("@")[0] || "Usuário",
       })
       .select()
       .single()
