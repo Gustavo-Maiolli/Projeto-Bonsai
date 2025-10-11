@@ -67,13 +67,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  // Fetch user's plants - Usando tb02_id_usuario, tb02_publica e tb02_data_criacao
+  // Fetch user's plants - Usando tb02_id_usuario, tb02_publica e tb02_criado_em
   const { data: plants } = await supabase
     .from("tb02_plantas")
     .select("*")
     .eq("tb02_id_usuario", id)
     .eq("tb02_publica", true)
-    .order("tb02_data_criacao", { ascending: false })
+    .order("tb02_criado_em", { ascending: false })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">

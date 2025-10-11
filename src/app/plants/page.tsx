@@ -24,7 +24,7 @@ export default async function PlantsPage() {
     .from("tb02_plantas")
     .select("*")
     .eq("tb02_id_usuario", user.id)
-    .order("tb02_data_criacao", { ascending: false })
+    .order("tb02_criado_em", { ascending: false })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50">

@@ -20,6 +20,9 @@ src/
  └─  styles/
      └─ globals.css
 
+## ☁️ Estrutura do Banco de Dados (Supabase)
+> O projeto utiliza o Supabase para o backend, incluindo Autenticação e Banco de Dados (PostgreSQL).
+
 ### public/
 > Contém os arquivos estáticos, como as imagens
 public/

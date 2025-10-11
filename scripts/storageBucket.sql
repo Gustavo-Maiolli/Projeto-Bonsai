@@ -1,4 +1,4 @@
--- **** CONFIGURAÇÃO FINAL DE BUCKETS E RLS (COM PREFIXOS E CORREÇÃO DE SEGURANÇA) ****
+-- **** CONFIGURAÇÃO FINAL DE BUCKETS E RLS (DEFINITIVO) ****
 
 -- 1. CRIAÇÃO DE BUCKETS (Usando prefixos tb0X_ consistentes)
 --------------------------------------------------------------------------------
@@ -33,9 +33,21 @@ DROP POLICY IF EXISTS "Usuarios podem atualizar suas proprias imagens de publica
 DROP POLICY IF EXISTS "Usuarios podem deletar suas proprias imagens de publicacoes" ON storage.objects;
 DROP POLICY IF EXISTS "Imagens de plantas sao publicas" ON storage.objects;
 DROP POLICY IF EXISTS "Imagens de publicacoes sao publicas" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Select em tb01_avatares - Imagens sao publicas" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Insert em tb01_avatares - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Update em tb01_avatares - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Delete em tb01_avatares - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Select em tb02_plantas - Imagens sao publicas" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Insert em tb02_plantas - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Update em tb02_plantas - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Delete em tb02_plantas - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Select em tb03_publicacoes - Imagens sao publicas" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Insert em tb03_publicacoes - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Update em tb03_publicacoes - Apenas na sua pasta" ON storage.objects;
+DROP POLICY IF EXISTS "RLS - Delete em tb03_publicacoes - Apenas na sua pasta" ON storage.objects;
 
 
--- 3. POLÍTICAS RLS (CORRIGIDAS COM PREFIXOS E REGRA DE PROPRIEDADE auth.uid())
+-- 3. POLÍTICAS RLS (CORRIGIDAS E LIMPAS DE CARACTERES INVISÍVEIS)
 --------------------------------------------------------------------------------
 
 -- BUCKET 'tb01_avatares'
@@ -46,22 +58,22 @@ USING (bucket_id = 'tb01_avatares');
 CREATE POLICY "RLS - Insert em tb01_avatares - Apenas na sua pasta"
 ON storage.objects FOR INSERT
 WITH CHECK (
- bucket_id = 'tb01_avatares' AND
- auth.uid()::text = (storage.foldername(name))[1]
+bucket_id = 'tb01_avatares' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 CREATE POLICY "RLS - Update em tb01_avatares - Apenas na sua pasta"
 ON storage.objects FOR UPDATE
 USING (
- bucket_id = 'tb01_avatares' AND
- auth.uid()::text = (storage.foldername(name))[1]
+bucket_id = 'tb01_avatares' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 CREATE POLICY "RLS - Delete em tb01_avatares - Apenas na sua pasta"
 ON storage.objects FOR DELETE
 USING (
- bucket_id = 'tb01_avatares' AND
- auth.uid()::text = (storage.foldername(name))[1]
+bucket_id = 'tb01_avatares' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 
@@ -73,22 +85,22 @@ USING (bucket_id = 'tb02_plantas');
 CREATE POLICY "RLS - Insert em tb02_plantas - Apenas na sua pasta"
 ON storage.objects FOR INSERT
 WITH CHECK (
- bucket_id = 'tb02_plantas' AND
- auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA: Exige propriedade da pasta
+bucket_id = 'tb02_plantas' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 CREATE POLICY "RLS - Update em tb02_plantas - Apenas na sua pasta"
 ON storage.objects FOR UPDATE
 USING (
- bucket_id = 'tb02_plantas' AND
- auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
+bucket_id = 'tb02_plantas' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 CREATE POLICY "RLS - Delete em tb02_plantas - Apenas na sua pasta"
 ON storage.objects FOR DELETE
 USING (
- bucket_id = 'tb02_plantas' AND
- auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
+bucket_id = 'tb02_plantas' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 
@@ -100,20 +112,20 @@ USING (bucket_id = 'tb03_publicacoes');
 CREATE POLICY "RLS - Insert em tb03_publicacoes - Apenas na sua pasta"
 ON storage.objects FOR INSERT
 WITH CHECK (
- bucket_id = 'tb03_publicacoes' AND
- auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
+bucket_id = 'tb03_publicacoes' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 CREATE POLICY "RLS - Update em tb03_publicacoes - Apenas na sua pasta"
 ON storage.objects FOR UPDATE
 USING (
- bucket_id = 'tb03_publicacoes' AND
- auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
+bucket_id = 'tb03_publicacoes' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
 
 CREATE POLICY "RLS - Delete em tb03_publicacoes - Apenas na sua pasta"
 ON storage.objects FOR DELETE
 USING (
- bucket_id = 'tb03_publicacoes' AND
- auth.uid()::text = (storage.foldername(name))[1] -- CORREÇÃO CRÍTICA
+bucket_id = 'tb03_publicacoes' AND
+auth.uid()::text = (storage.foldername(name))[1]
 );
