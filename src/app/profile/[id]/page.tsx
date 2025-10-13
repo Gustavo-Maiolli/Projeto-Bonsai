@@ -5,10 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Leaf, Calendar, Settings } from "lucide-react"
 import Link from "next/link"
-import { LogoutButton } from "@/components/profile/logout-button"
 
-// ✅ Import do Header global padronizado
-import { Header } from "@/components/layout/header"
 
 interface ProfilePageProps {
   params: { id: string }
@@ -17,22 +14,18 @@ interface ProfilePageProps {
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const id = params.id
 
-  // 🧭 Redireciona para a página de edição se o ID for "edit"
   if (id === "edit" || id.includes("edit")) {
     redirect("/profile/edit")
   }
 
-  // ✅ Criação do cliente Supabase
   const supabase = await createClientForBackend()
 
-  // 🔐 Verifica se o usuário está logado
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   const isOwnProfile = user?.id === id
 
-  // 🔍 Busca o perfil do usuário (tabela tb01_perfis)
   const { data: profile, error: profileError } = await supabase
     .from("tb01_perfis")
     .select("*")
@@ -66,10 +59,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="page-bg">
-      {/* ✅ Header global padronizado */}
-      {/* Passamos o user e o profile para o Header */}
-      <Header user={user} profile={profile} />
-
+      
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* 🧩 Seção principal do perfil */}
         <Card className="mb-8">

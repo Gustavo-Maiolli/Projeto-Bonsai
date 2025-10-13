@@ -5,6 +5,7 @@ import { Leaf } from "lucide-react"
 import Link from "next/link"
 import { SearchInterface } from "@/components/search/search-interface"
 
+
 interface SearchPageProps {
   searchParams: Promise<{ q?: string; type?: string }>
 }
@@ -21,11 +22,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     redirect("/auth/login")
   }
 
-  // Busca do perfil do usuário logado (para o header)
   const { data: profile } = await supabase
     .from("tb01_perfis")
     .select("*")
-    .eq("tb01_id", user.id) // Usando tb01_id
+    .eq("tb01_id", user.id) 
     .maybeSingle()
 
   const query = params.q || ""
@@ -121,24 +121,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <div className="page-bg">
       {/* Header */}
-      <header className="header">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Leaf className="h-8 w-8 text-emerald-600" />
-            <h1 className="text-2xl font-bold text-emerald-900">Bonsai Care</h1>
-          </Link>
-          <Link href={`/profile/${user.id}`}>
-            <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-emerald-600">
-              {/* Usando tb01_avatar_url */}
-              <AvatarImage src={profile?.tb01_avatar_url || undefined} />
-              <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                {/* Usando tb01_nome */}
-                {profile?.tb01_nome?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
-        </div>
-      </header>
+      
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <SearchInterface

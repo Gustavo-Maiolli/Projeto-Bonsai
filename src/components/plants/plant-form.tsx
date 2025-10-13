@@ -15,6 +15,7 @@ import { Leaf, Upload, Loader2 } from "lucide-react"
 import Link from "next/link"
 import type { Plant } from "@/lib/types" 
 
+
 interface PlantFormProps {
   userId: string
   plant?: Plant 
@@ -132,15 +133,6 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
 
   return (
     <div className="page-bg">
-      {/* Header */}
-      <header className="header">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Leaf className="h-8 w-8 text-emerald-600" />
-            <h1 className="text-2xl font-bold text-emerald-900">Bonsai Care</h1>
-          </Link>
-        </div>
-      </header>
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Card>

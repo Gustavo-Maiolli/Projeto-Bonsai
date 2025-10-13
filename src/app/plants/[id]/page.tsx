@@ -8,8 +8,6 @@ import { Leaf, Calendar, Droplet, Sun, MapPin, Thermometer, Edit, Plus } from "l
 import Link from "next/link"
 import { DeletePlantButton } from "@/components/plants/delete-plant-button"
 
-// ✅ Import do Header global padronizado
-import { Header } from "@/components/layout/header"
 
 interface PlantPageProps {
   params: Promise<{ id: string }>
@@ -76,7 +74,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
     <div className="page-bg">
       {/* ✅ Header global padronizado */}
       {/* Passamos o user e o profile para manter avatar e navegação */}
-      <Header user={user} profile={profile} />
+      
 
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="grid lg:grid-cols-2 gap-6">

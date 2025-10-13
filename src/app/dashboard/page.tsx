@@ -2,10 +2,9 @@ import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Leaf, Plus, Calendar, Search } from "lucide-react"
 import Link from "next/link"
-import { Logo } from "@/components/ui/logo"
+
 
 export default async function DashboardPage() {
     const supabase = await createClientForBackend()
@@ -50,28 +49,7 @@ export default async function DashboardPage() {
     return (
         <div className="page-bg">
             {/* Header */}
-            <header className="header">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <Link href="/dashboard">
-                        <Logo size="md" />
-                    </Link>
-                    <div className="flex items-center gap-3">
-                        <Button asChild variant="ghost" size="sm">
-                            <Link href="/search">
-                                <Search className="h-4 w-4" />
-                            </Link>
-                        </Button>
-                        <Link href={`/profile/${user.id}`}>
-                            <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-accent">
-                                <AvatarImage src={profile?.tb01_avatar_url || undefined} />
-                                <AvatarFallback className="bg-accent/10 text-accent">
-                                    {profile?.tb01_nome?.charAt(0).toUpperCase() || "U"}
-                                </AvatarFallback>
-                            </Avatar>
-                        </Link>
-                    </div>
-                </div>
-            </header>
+            
 
             <div className="container mx-auto px-4 py-8">
                 {/* Welcome Section */}

@@ -7,6 +7,7 @@ import { PostCard } from "@/components/feed/post-card"
 import { CommentSection } from "@/components/feed/comment-section"
 import { Button } from "@/components/ui/button"
 
+
 interface PostPageProps {
   params: Promise<{ id: string }>
 }
@@ -23,8 +24,7 @@ export default async function PostPage({ params }: PostPageProps) {
     redirect("/auth/login")
   }
 
-  // Busca do perfil do usuário logado (usado no header)
-  const { data: profile } = await supabase.from("tb01_perfis").select("*").eq("tb01_id", user.id).single()
+  
 
   // Busca da publicação com relações (joins)
   const { data: post, error } = await supabase
@@ -45,8 +45,6 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound()
   }
 
-  // Verifica se o usuário pode ver esta publicação
-  // Acesso à coluna da planta
   if (!post.tb02_plantas?.tb02_publica && post.tb03_id_usuario !== user.id) {
     notFound()
   }
@@ -65,29 +63,7 @@ export default async function PostPage({ params }: PostPageProps) {
   return (
     <div className="page-bg">
       {/* Header */}
-      <header className="header">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Leaf className="h-8 w-8 text-emerald-600" />
-            <h1 className="text-2xl font-bold text-emerald-900">Bonsai Care</h1>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/search">
-                <Search className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Link href={`/profile/${user.id}`}>
-              <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 ring-emerald-600">
-                <AvatarImage src={profile?.tb01_avatar_url || undefined} />
-                <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                  {profile?.tb01_nome.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-          </div>
-        </div>
-      </header>
+      
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Button asChild variant="ghost" size="sm" className="mb-4">

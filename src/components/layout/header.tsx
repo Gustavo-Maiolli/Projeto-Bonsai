@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
+import type { Profile } from "@/lib/profile"
 
 // Tipos do Supabase
 import type { User } from "@supabase/supabase-js"

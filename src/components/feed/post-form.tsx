@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
@@ -14,9 +13,10 @@ import { Leaf, Upload, Loader2 } from "lucide-react"
 import Link from "next/link"
 import type { Plant } from "@/lib/types"
 
+
 interface PostFormProps {
   userId: string
-  plant: Plant // O objeto Plant deve ter as chaves tb02_id, tb02_apelido, tb02_especie
+  plant: Plant
 }
 
 export function PostForm({ userId, plant }: PostFormProps) {
@@ -100,14 +100,6 @@ export function PostForm({ userId, plant }: PostFormProps) {
   return (
     <div className="page-bg">
       {/* Header */}
-      <header className="header">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Leaf className="h-8 w-8 text-emerald-600" />
-            <h1 className="text-2xl font-bold text-emerald-900">Bonsai Care</h1>
-          </Link>
-        </div>
-      </header>
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Card>
