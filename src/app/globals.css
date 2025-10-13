@@ -117,10 +117,18 @@
 }
 
 @layer base {
-  * {
+   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .page-bg {
+    @apply min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50;
+  }
+
+  .header {
+    @apply border-b border-primary/20 bg-white/80 backdrop-blur-sm;
   }
 }

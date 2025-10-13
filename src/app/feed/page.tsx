@@ -59,9 +59,9 @@ export default async function FeedPage() {
   }))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="border-b border-primary/20 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="header sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard">
             <Logo size="md" />

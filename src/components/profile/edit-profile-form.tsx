@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Leaf, Upload, Loader2 } from "lucide-react"
 import Link from "next/link"
-import type { Profile } from "@/lib/types" // Assumimos que Profile agora tem as chaves tb01_
+import type { Profile } from "@/lib/types"
 import type { User } from "@supabase/supabase-js"
 
 interface EditProfileFormProps {
@@ -23,7 +23,6 @@ interface EditProfileFormProps {
 
 export function EditProfileForm({ profile, user }: EditProfileFormProps) {
   const router = useRouter()
-  // Inicialização usando a nova nomenclatura de Profile
   const [displayName, setDisplayName] = useState(profile.tb01_nome)
   const [bio, setBio] = useState(profile.tb01_bio || "")
   const [avatarUrl, setAvatarUrl] = useState(profile.tb01_avatar_url || "")
@@ -93,9 +92,9 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="border-b border-emerald-200 bg-white/80 backdrop-blur-sm">
+      <header className="header">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Leaf className="h-8 w-8 text-emerald-600" />

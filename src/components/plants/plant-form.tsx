@@ -131,9 +131,9 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="border-b border-emerald-200 bg-white/80 backdrop-blur-sm">
+      <header className="header">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Leaf className="h-8 w-8 text-emerald-600" />

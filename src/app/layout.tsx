@@ -9,7 +9,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Bonsai Care App",
-  description: "Aplicativo desenvolvido pela Global Software Labs.",
+  description: "TCC",
 }
 
 export default function RootLayout({

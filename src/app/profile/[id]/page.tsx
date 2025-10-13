@@ -7,45 +7,41 @@ import { Leaf, Calendar, Settings } from "lucide-react"
 import Link from "next/link"
 import { LogoutButton } from "@/components/profile/logout-button"
 
-// A interface agora reflete que 'params' é um objeto síncrono.
+// ✅ Import do Header global padronizado
+import { Header } from "@/components/layout/header"
+
 interface ProfilePageProps {
   params: { id: string }
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  // CORREÇÃO: Usando o ID diretamente do objeto params, eliminando o await desnecessário.
   const id = params.id
 
-  console.log(" Profile page - received id:", id)
-
-  // Check if trying to access edit route - redirect immediately
+  // 🧭 Redireciona para a página de edição se o ID for "edit"
   if (id === "edit" || id.includes("edit")) {
-    console.log(" Redirecting to edit page")
     redirect("/profile/edit")
   }
 
+  // ✅ Criação do cliente Supabase
   const supabase = await createClientForBackend()
 
+  // 🔐 Verifica se o usuário está logado
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   const isOwnProfile = user?.id === id
 
-  // Fetch profile data - Usando tb01_id
+  // 🔍 Busca o perfil do usuário (tabela tb01_perfis)
   const { data: profile, error: profileError } = await supabase
     .from("tb01_perfis")
     .select("*")
     .eq("tb01_id", id)
     .maybeSingle()
 
-  console.log(" Profile data:", profile ? "found" : "not found", "Error:", profileError?.message || "none")
-
   if (!profile) {
-    // If it's the user's own profile and doesn't exist, create it or redirect to edit
+    // ⚙️ Se o usuário logado ainda não tem perfil, cria e redireciona
     if (isOwnProfile && user) {
-      console.log(" Creating profile for user:", user.id)
-      // Try to create the profile - Usando a nomenclatura tb01_
       const { error: insertError } = await supabase.from("tb01_perfis").insert({
         tb01_id: user.id,
         tb01_nome: user.email?.split("@")[0] || "Usuário",
@@ -53,21 +49,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         tb01_avatar_url: null,
       })
 
-      // If creation succeeded, redirect to edit page to complete profile
-      if (!insertError) {
-        console.log(" Profile created, redirecting to edit")
-        redirect("/profile/edit")
-      } else {
-        console.log(" Error creating profile:", insertError.message)
-      }
+      if (!insertError) redirect("/profile/edit")
     }
 
-    // If it's someone else's profile or creation failed, show not found
-    console.log(" Profile not found, showing 404")
+    // ❌ Se não for o próprio usuário ou falhou a criação
     notFound()
   }
 
-  // Fetch user's plants - Usando tb02_id_usuario, tb02_publica e tb02_criado_em
+  // 🌿 Busca as plantas públicas do usuário
   const { data: plants } = await supabase
     .from("tb02_plantas")
     .select("*")
@@ -76,51 +65,40 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     .order("tb02_criado_em", { ascending: false })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
-      {/* Header */}
-      <header className="border-b border-emerald-200 bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Leaf className="h-8 w-8 text-emerald-600" />
-            <h1 className="text-2xl font-bold text-emerald-900">Bonsai Care</h1>
-          </Link>
-          <div className="flex gap-3">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-            {isOwnProfile && <LogoutButton />}
-          </div>
-        </div>
-      </header>
+    <div className="page-bg">
+      {/* ✅ Header global padronizado */}
+      {/* Passamos o user e o profile para o Header */}
+      <Header user={user} profile={profile} />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Profile Header */}
+        {/* 🧩 Seção principal do perfil */}
         <Card className="mb-8">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-6 items-start">
+              {/* 👤 Avatar */}
               <Avatar className="h-24 w-24">
-                {/* Usando tb01_avatar_url */}
                 <AvatarImage src={profile.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl">
-                  {/* Usando tb01_nome */}
                   {profile.tb01_nome.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
+
+              {/* 📄 Informações do perfil */}
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    {/* Usando tb01_nome */}
                     <h2 className="text-2xl font-bold text-emerald-900">{profile.tb01_nome}</h2>
                     <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                       <Calendar className="h-4 w-4" />
                       Membro desde{" "}
-                      {/* Usando tb01_data_criacao */}
                       {new Date(profile.tb01_data_criacao).toLocaleDateString("pt-BR", {
                         month: "long",
                         year: "numeric",
                       })}
                     </p>
                   </div>
+
+                  {/* ⚙️ Botão de editar (somente se for o próprio perfil) */}
                   {isOwnProfile && (
                     <Button asChild size="sm" variant="outline">
                       <Link href="/profile/edit">
@@ -130,8 +108,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     </Button>
                   )}
                 </div>
-                {/* Usando tb01_bio */}
+
+                {/* 🗒️ Bio */}
                 {profile.tb01_bio && <p className="text-emerald-700 mt-3">{profile.tb01_bio}</p>}
+
+                {/* 🌱 Contador de plantas */}
                 <div className="flex gap-4 mt-4 text-sm">
                   <div>
                     <span className="font-semibold text-emerald-900">{plants?.length || 0}</span>{" "}
@@ -143,17 +124,21 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </CardContent>
         </Card>
 
-        {/* Plants Grid */}
+        {/* 🌿 Seção de plantas do perfil */}
         <div>
-          <h3 className="text-xl font-semibold text-emerald-900 mb-4">{isOwnProfile ? "Minhas Plantas" : "Plantas"}</h3>
-          {/* Corrigido o nome da variável de array de tb02_plantas para plants */}
+          <h3 className="text-xl font-semibold text-emerald-900 mb-4">
+            {isOwnProfile ? "Minhas Plantas" : "Plantas"}
+          </h3>
+
           {plants && plants.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {plants.map((plant) => (
-                <Card key={plant.tb02_id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card
+                  key={plant.tb02_id}
+                  className="overflow-hidden hover:shadow-lg transition-shadow"
+                >
                   <Link href={`/plants/${plant.tb02_id}`}>
                     <div className="aspect-square bg-emerald-100 relative">
-                      {/* Usando tb02_url_imagem, tb02_apelido, tb02_especie */}
                       {plant.tb02_url_imagem ? (
                         <img
                           src={plant.tb02_url_imagem || "/placeholder.svg"}
@@ -166,9 +151,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                         </div>
                       )}
                     </div>
+
                     <CardContent className="p-4">
-                      {/* Usando tb02_apelido, tb02_especie */}
-                      <h4 className="font-semibold text-emerald-900">{plant.tb02_apelido || plant.tb02_especie}</h4>
+                      <h4 className="font-semibold text-emerald-900">
+                        {plant.tb02_apelido || plant.tb02_especie}
+                      </h4>
                       <p className="text-sm text-muted-foreground">{plant.tb02_especie}</p>
                     </CardContent>
                   </Link>
@@ -184,6 +171,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     ? "Você ainda não cadastrou nenhuma planta"
                     : "Este usuário ainda não tem plantas públicas"}
                 </p>
+
+                {/* 🌱 Botão de adicionar planta (somente se for o próprio perfil) */}
                 {isOwnProfile && (
                   <Button asChild className="mt-4 bg-emerald-600 hover:bg-emerald-700">
                     <Link href="/plants/new">Cadastrar primeira planta</Link>

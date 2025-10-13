@@ -27,9 +27,9 @@ export default async function PlantsPage() {
     .order("tb02_criado_em", { ascending: false })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="border-b border-primary/20 bg-white/80 backdrop-blur-sm">
+      <header className="header">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard">
             <Logo size="md" />
