@@ -50,7 +50,15 @@ export default async function RootLayout({
   if (isHomePage) {
     return (
       <html lang="pt-BR">
-        
+        <body>
+          <main>
+            <Suspense fallback={null}>
+              {children}
+              <Toaster />
+            </Suspense>
+          </main>
+          <Analytics />
+        </body>
       </html>
     )
   }
