@@ -50,7 +50,7 @@ export default async function RootLayout({
   if (isHomePage) {
     return (
       <html lang="pt-BR">
-        <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+        <body className="page-bg">
           <main>
             <Suspense fallback={null}>
               {children}
