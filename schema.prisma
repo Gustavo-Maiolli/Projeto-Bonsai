@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NEXT_PUBLIC_SUPABASE_URL")
+}
+
+model tb01_perfis {
+  tb01_id         String   @id @db.Uuid
+  tb01_nome       String
+  tb01_bio        String?
+  tb01_avatar_url String?
+  tb01_criado_em  DateTime @default(now())
+  tb01_atualizado_em DateTime @updatedAt
+
+  usuario   Usuario? @relation(fields: [tb01_id], references: [id])
+  plantas   tb02_plantas[]
+  posts     tb03_publicacoes[]
+  comentarios tb05_comentarios[]
+  curtidas  tb04_curtidas[]
+  lembretes tb06_lembretes_cuidado[]
+
+  @@map("tb01_perfis")
+}
+
+model tb02_plantas {
+  tb02_id              String   @id @db.Uuid
+  tb02_id_usuario      String   @db.Uuid
+  tb02_especie         String
+  tb02_apelido         String?
+  tb02_localizacao     String?
+  tb02_temperatura     String?
+  tb02_data_inicio     DateTime
+  tb02_frequencia_rega Int
+  tb02_frequencia_sol  Int?
+  tb02_notas_cuidado   String?
+  tb02_url_imagem      String?
+  tb02_publica         Boolean  @default(false)
+  tb02_criado_em       DateTime @default(now())
+  tb02_atualizado_em   DateTime @updatedAt
+
+  usuario    tb01_perfis        @relation(fields: [tb02_id_usuario], references: [tb01_id])
+  publicacoes tb03_publicacoes[]
+  lembretes   tb06_lembretes_cuidado[]
+
+  @@map("tb02_plantas")
+}
+
+model tb03_publicacoes {
+  tb03_id            String   @id @db.Uuid
+  tb03_id_planta     String   @db.Uuid
+  tb03_id_usuario    String   @db.Uuid
+  tb03_url_imagem    String?
+  tb03_descricao     String?
+  tb03_criado_em     DateTime @default(now())
+  tb03_atualizado_em DateTime @updatedAt
+
+  planta   tb02_plantas @relation(fields: [tb03_id_planta], references: [tb02_id])
+  usuario  tb01_perfis  @relation(fields: [tb03_id_usuario], references: [tb01_id])
+  comentarios tb05_comentarios[]
+  curtidas    tb04_curtidas[]
+
+  @@map("tb03_publicacoes")
+}
+
+model tb04_curtidas {
+  tb04_id             String   @id @db.Uuid
+  tb04_id_publicacao  String   @db.Uuid
+  tb04_id_usuario     String   @db.Uuid
+  tb04_criado_em      DateTime @default(now())
+
+  publicacao tb03_publicacoes @relation(fields: [tb04_id_publicacao], references: [tb03_id])
+  usuario    tb01_perfis      @relation(fields: [tb04_id_usuario], references: [tb01_id])
+
+  @@map("tb04_curtidas")
+}
+
+model tb05_comentarios {
+  tb05_id             String   @id @db.Uuid
+  tb05_id_publicacao  String   @db.Uuid
+  tb05_id_usuario     String   @db.Uuid
+  tb05_conteudo       String
+  tb05_criado_em      DateTime @default(now())
+  tb05_atualizado_em  DateTime @updatedAt
+
+  publicacao tb03_publicacoes @relation(fields: [tb05_id_publicacao], references: [tb03_id])
+  usuario    tb01_perfis      @relation(fields: [tb05_id_usuario], references: [tb01_id])
+
+  @@map("tb05_comentarios")
+}
+
+model tb06_lembretes_cuidado {
+  tb06_id              String   @id @db.Uuid
+  tb06_id_planta       String   @db.Uuid
+  tb06_id_usuario      String   @db.Uuid
+  tb06_data_lembrete   DateTime
+  tb06_tipo_lembrete   String
+  tb06_concluido       Boolean  @default(false)
+  tb06_data_conclusao  DateTime?
+  tb06_criado_em       DateTime @default(now())
+
+  planta  tb02_plantas @relation(fields: [tb06_id_planta], references: [tb02_id])
+  usuario tb01_perfis  @relation(fields: [tb06_id_usuario], references: [tb01_id])
+
+  @@map("tb06_lembretes_cuidado")
+}
+
+model Usuario {
+  id        String        @id @db.Uuid
+  email     String?       @unique
+  perfis    tb01_perfis?
+  createdAt DateTime?     @default(now())
+  updatedAt DateTime?     @updatedAt
+
+  @@map("auth.users")
+}
