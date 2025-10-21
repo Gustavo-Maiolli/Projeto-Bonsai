@@ -1,21 +1,22 @@
 import { createClientForBackend } from "@/lib/supabase/serverClient"
 import { notFound, redirect } from "next/navigation"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Leaf, Search } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
+
+// Componentes reutilizáveis
 import { PostCard } from "@/components/feed/post-card"
 import { CommentSection } from "@/components/feed/comment-section"
-import { Button } from "@/components/ui/button"
 
-
+// Tipagem dos parâmetros da rota
 interface PostPageProps {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 export default async function PostPage({ params }: PostPageProps) {
-  const { id } = await params
+  const { id } = params
   const supabase = await createClientForBackend()
 
+  // 🧩 Busca usuário autenticado
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -24,9 +25,7 @@ export default async function PostPage({ params }: PostPageProps) {
     redirect("/auth/login")
   }
 
-  
-
-  // Busca da publicação com relações (joins)
+  // 🧠 Busca post + planta + perfil + curtidas + comentários
   const { data: post, error } = await supabase
     .from("tb03_publicacoes")
     .select(
@@ -36,43 +35,50 @@ export default async function PostPage({ params }: PostPageProps) {
       tb01_perfis!tb03_id_usuario_fkey(*),
       tb04_curtidas(tb04_id, tb04_id_usuario),
       tb05_comentarios(tb05_id)
-    `,
+      `
     )
     .eq("tb03_id", id)
     .single()
 
+  // ❌ Caso não exista post
   if (error || !post) {
     notFound()
   }
 
+  // 🔒 Caso o post seja de planta privada e não seja do próprio usuário
   if (!post.tb02_plantas?.tb02_publica && post.tb03_id_usuario !== user.id) {
     notFound()
   }
 
+  // 📊 Processa contadores e estado do like
   const postWithCounts = {
     ...post,
     _count: {
-      // Usando os novos nomes das relações
       likes: post.tb04_curtidas?.length || 0,
       comments: post.tb05_comentarios?.length || 0,
     },
-    // Adicionando a verificação de like do usuário
-    isLikedByUser: post.tb04_curtidas?.some((like: any) => like.tb04_id_usuario === user.id) || false,
+    isLikedByUser: post.tb04_curtidas?.some(
+      (like: any) => like.tb04_id_usuario === user.id
+    ) || false,
   }
 
+  // ✅ Retorno da tela
   return (
     <div className="page-bg">
-      {/* Header */}
-      
-
       <div className="container mx-auto px-4 py-8 max-w-2xl">
+        {/* 🔙 Botão para voltar */}
         <Button asChild variant="ghost" size="sm" className="mb-4">
           <Link href="/feed">← Voltar ao feed</Link>
         </Button>
 
-        {/* O componente PostCard precisará ser ajustado para esperar a nova estrutura de dados (tb03_publicacoes) */}
-        <PostCard post={postWithCounts as any} currentUserId={user.id} showActions />
+        {/* 🧩 Exibe o post (curtidas, autor, planta, etc.) */}
+        <PostCard
+          post={postWithCounts as any}
+          currentUserId={user.id}
+          showActions
+        />
 
+        {/* 💬 Seção de comentários */}
         <CommentSection postId={post.tb03_id} currentUserId={user.id} />
       </div>
     </div>
