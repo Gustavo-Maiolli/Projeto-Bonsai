@@ -82,37 +82,35 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         .select(
           `
           *,
-          tb02_plantas!inner(             // Relação com tb02_plantas
+          tb02_plantas!tb03_id_planta(             
             tb02_id,
             tb02_especie,
             tb02_apelido,
             tb02_publica,
             tb02_id_usuario
           ),
-          tb01_perfis!tb03_id_usuario_fkey(  // Relação com tb01_perfis (Autor)
+          tb01_perfis(  
             tb01_id,
             tb01_nome,
             tb01_avatar_url
           ),
-          tb04_curtidas(tb04_id, tb04_id_usuario), // Relação de likes
-          tb05_comentarios(tb05_id)          // Relação de comentários
+          tb04_curtidas(tb04_id, tb04_id_usuario), 
+          tb05_comentarios(tb05_id)          
         `,
         )
         // Filtra posts apenas de plantas públicas (usando o alias da coluna da planta)
         .eq("tb02_plantas.tb02_publica", true) 
-        .ilike("tb03_conteudo", `%${query}%`) // Usando tb03_conteudo (assumindo que o campo 'description' anterior era o conteúdo do post)
-        .order("tb03_data_criacao", { ascending: false }) // Usando tb03_data_criacao
+        .ilike("tb03_descricao", `%${query}%`) 
+        .order("tb03_criado_em", { ascending: false }) 
         .limit(20)
 
       posts =
-        postsData?.map((post: any) => ({ // Tipagem 'any' temporária para facilitar o mapeamento
+        postsData?.map((post: any) => ({ 
           ...post,
           _count: {
-            // Usando as novas relações
             likes: post.tb04_curtidas?.length || 0,
             comments: post.tb05_comentarios?.length || 0,
           },
-          // Usando a nova coluna de ID do usuário no like
           isLikedByUser: post.tb04_curtidas?.some((like: any) => like.tb04_id_usuario === user.id) || false,
         })) || []
     }

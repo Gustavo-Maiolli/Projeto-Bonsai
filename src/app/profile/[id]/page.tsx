@@ -164,7 +164,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
                 {/* 🌱 Botão de adicionar planta (somente se for o próprio perfil) */}
                 {isOwnProfile && (
-                  <Button asChild className="mt-4 bg-emerald-600 hover:bg-emerald-700">
+                  <Button asChild className="mt-4 bg-accent hover:bg-accent/90">
                     <Link href="/plants/new">Cadastrar primeira planta</Link>
                   </Button>
                 )}

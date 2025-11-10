@@ -270,7 +270,7 @@ export function CalendarView({ tb02_plantas, initialReminders, userId }: Calenda
             <CardTitle className="text-lg">Ações</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button onClick={generateReminders} className="w-full bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={generateReminders} className="w-full bg-accent hover:bg-accent/90">
               <Plus className="h-4 w-4 mr-2" />
               Gerar lembretes
             </Button>
@@ -333,7 +333,7 @@ export function CalendarView({ tb02_plantas, initialReminders, userId }: Calenda
             <CardContent className="py-8 text-center">
               <Leaf className="h-12 w-12 text-emerald-300 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground mb-4">Cadastre plantas para gerar lembretes</p>
-              <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+              <Button asChild className="bg-accent hover:bg-accent/90">
                 <a href="/plants/new">Cadastrar planta</a>
               </Button>
             </CardContent>

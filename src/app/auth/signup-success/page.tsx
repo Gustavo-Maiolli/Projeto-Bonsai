@@ -24,7 +24,7 @@ export default function SignUpSuccessPage() {
               <p className="text-sm text-muted-foreground text-center">
                 Clique no link que enviamos para confirmar sua conta e começar a usar o Bonsai Care.
               </p>
-              <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700">
+              <Button asChild className="w-full bg-accent hover:bg-accent/90">
                 <Link href="/auth/login">Voltar para login</Link>
               </Button>
             </CardContent>

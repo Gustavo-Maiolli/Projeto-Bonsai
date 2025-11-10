@@ -160,12 +160,12 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
               <p className="font-semibold text-sm text-emerald-900">{likeCount} curtidas</p>
             </div>
 
-            {/* Usando tb03_conteudo */}
-            {post.tb03_conteudo && (
+            {/* Usando tb03_descricao */}
+            {post.tb03_descricao && (
               <div>
                 {/* Usando tb01_nome */}
                 <span className="font-semibold text-emerald-900">{userProfile?.tb01_nome}</span>{" "}
-                <span className="text-emerald-700">{post.tb03_conteudo}</span>
+                <span className="text-emerald-700">{post.tb03_descricao}</span>
               </div>
             )}
 
@@ -176,8 +176,8 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
             )}
 
             <p className="text-xs text-muted-foreground">
-              {/* Usando tb03_data_criacao */}
-              {new Date(post.tb03_data_criacao).toLocaleDateString("pt-BR", {
+              {/* Usando tb03_criado_em */}
+              {new Date(post.tb03_criado_em).toLocaleDateString("pt-BR", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",

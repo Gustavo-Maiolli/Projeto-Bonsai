@@ -22,7 +22,7 @@ interface PostFormProps {
 export function PostForm({ userId, plant }: PostFormProps) {
   const router = useRouter()
 
-  // Mapeado para tb03_conteudo
+  // Mapeado para tb03_descricao
   const [description, setDescription] = useState("")
   // Mapeado para tb03_url_imagem
   const [imageUrl, setImageUrl] = useState("")
@@ -40,16 +40,16 @@ export function PostForm({ userId, plant }: PostFormProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
       const fileExt = file.name.split(".").pop()
-      const fileName = `${userId}-${Date.now()}.${fileExt}`
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `${userId}/${fileName}`; 
 
-      // O nome do bucket 'tb03_publicacoes' é mantido
-      const { data, error: uploadError } = await supabase.storage.from("tb03_publicacoes").upload(fileName, file, { upsert: true })
+      const { data, error: uploadError } = await supabase.storage.from("tb03_publicacoes").upload(filePath, file, { upsert: true })
 
       if (uploadError) throw uploadError
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("tb03_publicacoes").getPublicUrl(fileName)
+      } = supabase.storage.from("tb03_publicacoes").getPublicUrl(filePath) 
 
       setImageUrl(publicUrl)
     } catch (err) {
@@ -76,19 +76,19 @@ export function PostForm({ userId, plant }: PostFormProps) {
       const { data, error: insertError } = await supabase
         .from("tb03_publicacoes")
         .insert({
-          // Campos atualizados para a nomenclatura tb03_
           tb03_id_usuario: userId,
-          tb03_id_planta: plant.tb02_id, // Assumindo que o ID da planta está em plant.tb02_id
+          tb03_id_planta: plant.tb02_id,
           tb03_url_imagem: imageUrl,
-          tb03_conteudo: description || null, // Mapeado de 'description'
+          tb03_descricao: description || null, 
         })
-        .select()
+        .select("tb03_id")
         .single()
 
       if (insertError) throw insertError
 
-      // Redireciona para o post usando o novo ID tb03_id
-      router.push(`/posts/${data.tb03_id}`)
+      const postId = data.tb03_id;
+
+      router.push(`/posts/${postId}`)
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao criar post")
@@ -106,7 +106,6 @@ export function PostForm({ userId, plant }: PostFormProps) {
           <CardHeader>
             <CardTitle className="text-2xl text-emerald-900">Novo Post</CardTitle>
             <p className="text-sm text-muted-foreground">
-              {/* Usando tb02_apelido ou tb02_especie */}
               Compartilhe a evolução de <span className="font-semibold">{plant.tb02_apelido || plant.tb02_especie}</span>
             </p>
           </CardHeader>

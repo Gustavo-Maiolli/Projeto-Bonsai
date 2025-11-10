@@ -68,7 +68,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
     .from("tb03_publicacoes")
     .select("*")
     .eq("tb03_id_planta", id)
-    .order("tb03_data_criacao", { ascending: false })
+    .order("tb03_criado_em", { ascending: false })
 
   return (
     <div className="page-bg">
@@ -99,7 +99,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
             {/* ⚙️ Ações do dono */}
             {isOwner && (
               <div className="flex gap-3 mt-4">
-                <Button asChild className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+                <Button asChild className="flex-1 bg-accent hover:bg-accent/90">
                   <Link href={`/plants/${plant.tb02_id}/edit`}>
                     <Edit className="h-4 w-4 mr-2" />
                     Editar
@@ -241,7 +241,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-2xl font-bold text-emerald-900">Evolução</h3>
             {isOwner && (
-              <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+              <Button asChild className="bg-accent hover:bg-accent/90">
                 <Link href={`/plants/${plant.tb02_id}/posts/new`}>
                   <Plus className="h-4 w-4 mr-2" />
                   Novo Post
@@ -264,7 +264,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
                     </div>
                     <CardContent className="p-3">
                       <p className="text-xs text-muted-foreground">
-                        {new Date(post.tb03_data_criacao).toLocaleDateString("pt-BR")}
+                        {new Date(post.tb03_criado_em).toLocaleDateString("pt-BR")}
                       </p>
                       {post.tb03_descricao && (
                         <p className="text-sm text-emerald-700 mt-1 line-clamp-2">
@@ -282,7 +282,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
                 <Leaf className="h-12 w-12 text-emerald-300 mx-auto mb-4" />
                 <p className="text-muted-foreground mb-4">Nenhum post ainda</p>
                 {isOwner && (
-                  <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+                  <Button asChild className="bg-accent hover:bg-accent/90">
                     <Link href={`/plants/${plant.tb02_id}/posts/new`}>
                       <Plus className="h-4 w-4 mr-2" />
                       Criar primeiro post

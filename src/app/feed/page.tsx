@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Leaf, Search } from "lucide-react"
 import Link from "next/link"
 import { PostCard } from "@/components/feed/post-card"
-
+export const revalidate = 0;
 
 export default async function FeedPage() {
   const supabase = await createClientForBackend()
@@ -23,29 +23,82 @@ export default async function FeedPage() {
     .eq("tb01_id", user.id)
     .maybeSingle()
     
+  /*
   const { data: posts, error: postsError } = await supabase
     .from("tb03_publicacoes")
     .select(
       `
       *,
-      plants!inner(
-        id,
-        species,
-        nickname,
-        is_public,
-        user_id
-      ),
-      profiles(
-        id,
-        display_name,
-        avatar_url
-      ),
-      likes(id, user_id),
-      comments(id)
+      tb02_plantas!tb03_id_planta(             
+            tb02_id,
+            tb02_especie,
+            tb02_apelido,
+            tb02_publica,
+            tb02_id_usuario
+          ),
+          tb01_perfis!tb03_id_usuario(  
+            tb01_id,
+            tb01_nome,
+            tb01_avatar_url
+          ),
+          tb04_curtidas(tb04_id, tb04_id_usuario), 
+          tb05_comentarios(tb05_id)  
     `,
     )
-    .eq("tb02_plantas.is_public", true)
-    .order("created_at", { ascending: false })
+    .order("tb03_criado_em", { ascending: false })
+ */
+
+    const { data: posts, error: postsError } = await supabase
+  .from("tb03_publicacoes")
+  .select("*")
+  .order("tb03_criado_em", { ascending: false })
+
+if (postsError) {
+  console.error("Erro ao buscar posts:", postsError)
+  throw postsError
+}
+
+if (!posts || posts.length === 0) {
+  return []
+}
+
+// IDs para consultas relacionadas
+const userIds = [...new Set(posts.map((p) => p.tb03_id_usuario))]
+const plantIds = [...new Set(posts.map((p) => p.tb03_id_planta))]
+const postIds = posts.map((p) => p.tb03_id)
+
+// Buscar perfis
+const { data: perfis } = await supabase
+  .from("tb01_perfis")
+  .select("tb01_id, tb01_nome, tb01_avatar_url")
+  .in("tb01_id", userIds)
+
+// Buscar plantas
+const { data: plantas } = await supabase
+  .from("tb02_plantas")
+  .select("tb02_id, tb02_especie, tb02_apelido, tb02_publica, tb02_id_usuario")
+  .in("tb02_id", plantIds)
+
+// Buscar curtidas
+const { data: curtidas } = await supabase
+  .from("tb04_curtidas")
+  .select("tb04_id, tb04_id_publicacao, tb04_id_usuario")
+  .in("tb04_id_publicacao", postIds)
+
+// Buscar comentários
+const { data: comentarios } = await supabase
+  .from("tb05_comentarios")
+  .select("tb05_id, tb05_id_publicacao")
+  .in("tb05_id_publicacao", postIds)
+
+// Montar resultado final (equivalente ao join)
+const postsWithRelations = posts.map((post) => ({
+  ...post,
+  tb01_perfis: perfis?.find((p) => p.tb01_id === post.tb03_id_usuario),
+  tb02_plantas: plantas?.find((pl) => pl.tb02_id === post.tb03_id_planta),
+  tb04_curtidas: curtidas?.filter((c) => c.tb04_id_publicacao === post.tb03_id) || [],
+  tb05_comentarios: comentarios?.filter((c) => c.tb05_id_publicacao === post.tb03_id) || [],
+}))
 
   console.log(" Posts query error:", postsError)
   console.log(" Posts data:", posts)
@@ -61,9 +114,6 @@ export default async function FeedPage() {
 
   return (
     <div className="page-bg">
-      {/* Header */}
-      
-
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="mb-6">
           <h2 className="text-3xl font-bold text-primary">Feed</h2>

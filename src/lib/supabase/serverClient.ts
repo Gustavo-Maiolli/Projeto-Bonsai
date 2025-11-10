@@ -18,7 +18,7 @@ export async function createClientForBackend() {
               cookieStore.set(name, value, options)
             )
           } catch {
-            // O setAll foi chamado dentro de um Server Component (sem efeito)
+
           }
         },
       },

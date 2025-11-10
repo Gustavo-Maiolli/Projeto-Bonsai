@@ -68,7 +68,7 @@ export function SearchInterface({
                 className="pl-10"
               />
             </div>
-            <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700">
+            <Button type="submit" className="bg-accent hover:bg-accent/90">
               Buscar
             </Button>
           </form>

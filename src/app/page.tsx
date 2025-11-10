@@ -113,7 +113,7 @@ export default function HomePage() {
       <footer className="border-t border-orange-200 bg-white/80 backdrop-blur-sm mt-16">
         <div className="container mx-auto px-4 py-8 text-center text-[#5A4037]">
           <p className="text-sm">
-            © 2025 Bonsai Care. Feito com <Heart className="inline h-4 w-4 text-red-500" /> para cultivadores de bonsai.
+            © 2025 Bonsai Care.
           </p>
         </div>
       </footer>

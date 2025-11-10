@@ -299,7 +299,7 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
               )}
 
               <div className="flex gap-3">
-                <Button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700" disabled={isLoading}>
+                <Button type="submit" className="flex-1 bg-accent hover:bg-accent/90" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />

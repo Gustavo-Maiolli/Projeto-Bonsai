@@ -125,10 +125,19 @@
   }
 
   .page-bg {
-    @apply min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50;
+    /* Quando se adiciona essa linha muda a cor de fundo, mas fica somente na div page-bg, não na tela toda */
+    /* @apply min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-stone-50; */
   }
 
   .header {
     @apply border-b border-primary/20 bg-white/80 backdrop-blur-sm;
   }
 }
+
+
+/* 
+Cores antigas dos botões (verde):
+bg-emerald-600 hover:bg-emerald-700
+Cor atual: 
+bg-accent hover:bg-accent/90 
+*/
