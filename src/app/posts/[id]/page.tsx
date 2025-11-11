@@ -31,8 +31,8 @@ export default async function PostPage({ params }: PostPageProps) {
     .select(
       `
       *,
-      tb02_plantas!inner(*),
-      tb01_perfis!tb03_id_usuario_fkey(*),
+      tb02_plantas!tb03_id_planta(*),
+      tb01_perfis!tb03_id_usuario(*),
       tb04_curtidas(tb04_id, tb04_id_usuario),
       tb05_comentarios(tb05_id)
       `

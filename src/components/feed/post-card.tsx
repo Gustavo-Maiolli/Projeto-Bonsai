@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
@@ -21,14 +20,13 @@ import {
 } from "@/components/ui/alert-dialog"
 
 interface PostCardProps {
-  post: any // O objeto post agora deve conter a nova nomenclatura de chaves
+  post: any 
   currentUserId: string
   showActions?: boolean
 }
 
 export function PostCard({ post, currentUserId, showActions = false }: PostCardProps) {
   const router = useRouter()
-  // As propriedades isLikedByUser e _count.likes vêm do fetch inicial, que já foi corrigido no SearchPage/FeedPage
   const [isLiked, setIsLiked] = useState(post.isLikedByUser)
   const [likeCount, setLikeCount] = useState(post._count.likes)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -79,7 +77,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
       router.push("/feed")
       router.refresh()
     } catch (error) {
-      console.error("Error deleting post:", error)
+      console.error("Erro ao excluir post:", error)
       alert("Erro ao excluir post")
     } finally {
       setIsDeleting(false)
@@ -95,29 +93,23 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
     <>
       <Card>
         <CardContent className="p-0">
-          {/* Header */}
           <div className="p-4 flex items-center justify-between">
-            {/* Link para o perfil - Usando tb03_id_usuario */}
+          <div className="flex items-center gap-3">
             <Link href={`/profile/${post.tb03_id_usuario}`} className="flex items-center gap-3 hover:opacity-80">
               <Avatar>
-                {/* Usando tb01_avatar_url */}
                 <AvatarImage src={userProfile?.tb01_avatar_url || undefined} />
                 <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                  {/* Usando tb01_nome */}
                   {userProfile?.tb01_nome.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                {/* Usando tb01_nome */}
                 <p className="font-semibold text-emerald-900">{userProfile?.tb01_nome}</p>
-                {/* Link para a planta - Usando tb02_id */}
-                <Link href={`/plants/${plantData?.tb02_id}`} className="text-sm text-muted-foreground hover:underline">
-                  {/* Usando tb02_apelido ou tb02_especie */}
-                  {plantData?.tb02_apelido || plantData?.tb02_especie}
-                </Link>
               </div>
             </Link>
-
+            <Link href={`/plants/${plantData?.tb02_id}`} className="text-sm text-muted-foreground hover:underline ml-2">
+              {plantData?.tb02_apelido || plantData?.tb02_especie}
+            </Link>
+          </div>
             {isOwner && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

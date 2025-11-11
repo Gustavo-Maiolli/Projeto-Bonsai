@@ -1,7 +1,5 @@
 "use client"
-
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
@@ -73,7 +71,6 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
 
-      // 3. INSERT - Usando campos tb05_
       const { error } = await supabase.from("tb05_comentarios").insert({
         tb05_id_publicacao: postId, 
         tb05_id_usuario: currentUserId, 

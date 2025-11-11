@@ -103,13 +103,15 @@ const postsWithRelations = posts.map((post) => ({
   console.log(" Posts query error:", postsError)
   console.log(" Posts data:", posts)
 
-  const postsWithCounts = posts?.map((post) => ({
+ const postsWithCounts = postsWithRelations.map((post) => ({
     ...post,
     _count: {
-      likes: post.likes?.length || 0,
-      comments: post.comments?.length || 0,
+      likes: post.tb04_curtidas?.length || 0, 
+      comments: post.tb05_comentarios?.length || 0, 
     },
-    isLikedByUser: post.likes?.some((like: any) => like.user_id === user.id) || false,
+    isLikedByUser: post.tb04_curtidas?.some(
+      (like: any) => like.tb04_id_usuario === user.id 
+    ) || false,
   }))
 
   return (
