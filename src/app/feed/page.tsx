@@ -48,7 +48,7 @@ export default async function FeedPage() {
     .order("tb03_criado_em", { ascending: false })
  */
 
-    const { data: posts, error: postsError } = await supabase
+  const { data: posts, error: postsError } = await supabase
   .from("tb03_publicacoes")
   .select("*")
   .order("tb03_criado_em", { ascending: false })

@@ -1,7 +1,5 @@
 "use client"
-
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
@@ -11,11 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Leaf, Upload, Loader2 } from "lucide-react"
-import Link from "next/link"
+import { Upload, Loader2 } from "lucide-react"
 import type { Profile } from "@/lib/types"
 import type { User } from "@supabase/supabase-js"
-
 
 interface EditProfileFormProps {
   profile: Profile
@@ -41,22 +37,24 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
       const fileExt = file.name.split(".").pop()
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`
+      const filePath = `${user.id}/${Date.now()}.${fileExt}`
 
-      // Upload para o bucket 'avatares' (manter o nome se for um bucket separado)
       const { data, error: uploadError } = await supabase.storage
-        .from("avatares")
-        .upload(fileName, file, { upsert: true })
+        .from("tb01_avatares")
+        .upload(filePath, file, {
+          upsert: true,
+          contentType: file.type,
+        })
 
       if (uploadError) throw uploadError
 
-      // Get public URL
       const {
         data: { publicUrl },
-      } = supabase.storage.from("avatares").getPublicUrl(fileName)
+      } = supabase.storage.from("tb01_avatares").getPublicUrl(filePath)
 
       setAvatarUrl(publicUrl)
     } catch (err) {
+      console.error("Erro ao fazer upload:", err)
       setError(err instanceof Error ? err.message : "Erro ao fazer upload")
     } finally {
       setUploadingAvatar(false)
@@ -71,15 +69,14 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
     try {
       const supabase = createBrowserSupabaseClientForFrontend()
 
-      // Operação UPDATE na tb01_perfis com as novas colunas
       const { error: updateError } = await supabase
         .from("tb01_perfis")
         .update({
-          tb01_nome: displayName, // Mapeado de display_name
-          tb01_bio: bio || null, // Mapeado de bio
-          tb01_avatar_url: avatarUrl || null, // Mapeado de avatar_url
+          tb01_nome: displayName,
+          tb01_bio: bio || null,
+          tb01_avatar_url: avatarUrl || null,
         })
-        .eq("tb01_id", user.id) // Filtrando pelo ID do usuário, que é a PK da tb01_perfis
+        .eq("tb01_id", user.id)
 
       if (updateError) throw updateError
 
@@ -94,9 +91,6 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
 
   return (
     <div className="page-bg">
-      {/* Header */}
-      
-
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Card>
           <CardHeader>
@@ -109,7 +103,6 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={avatarUrl || undefined} />
                   <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl">
-                    {/* Exibir a primeira letra do nome de exibição */}
                     {displayName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -140,20 +133,22 @@ export function EditProfileForm({ profile, user }: EditProfileFormProps) {
                 </div>
               </div>
 
-              {/* Display Name */}
               <div className="space-y-2">
                 <Label htmlFor="displayName">Nome</Label>
-                <Input id="displayName" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
+                <Input
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                />
               </div>
 
-              {/* Email (read-only) */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" value={user.email} disabled />
                 <p className="text-xs text-muted-foreground">O email não pode ser alterado</p>
               </div>
 
-              {/* Bio */}
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea

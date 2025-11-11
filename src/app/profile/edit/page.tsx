@@ -3,8 +3,6 @@ import { redirect } from "next/navigation"
 import { EditProfileForm } from "@/components/profile/edit-profile-form"
 
 export default async function EditProfilePage() {
-  console.log(" Edit profile page loaded")
-
   const supabase = await createClientForBackend()
 
   const {
@@ -12,13 +10,12 @@ export default async function EditProfilePage() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    console.log(" No user found, redirecting to login")
+    console.log("Usuario nçao logado")
     redirect("/auth/login")
   }
 
   console.log(" User found:", user.id)
 
-  // 1. Busca do perfil existente - Usando tb01_id
   const { data: profile, error } = await supabase
     .from("tb01_perfis")
     .select("*")
@@ -28,8 +25,6 @@ export default async function EditProfilePage() {
   console.log(" Profile data:", profile ? "found" : "not found", "Error:", error?.message || "none")
 
   if (!profile) {
-    console.log(" Creating new profile for user")
-    // 2. Criação de novo perfil - Usando tb01_id e tb01_nome
     const { data: newProfile, error: createError } = await supabase
       .from("tb01_perfis")
       .insert({
@@ -40,14 +35,10 @@ export default async function EditProfilePage() {
       .single()
 
     if (createError || !newProfile) {
-      console.error(" Error creating profile:", createError)
+      console.error("Erro para criar perfil:", createError)
       redirect("/dashboard")
     }
-
-    console.log(" New profile created successfully")
     return <EditProfileForm profile={newProfile} user={user} />
   }
-
-  console.log(" Rendering edit form with existing profile")
   return <EditProfileForm profile={profile} user={user} />
 }
