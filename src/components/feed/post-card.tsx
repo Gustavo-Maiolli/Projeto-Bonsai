@@ -123,7 +123,7 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
                     <Trash2 className="h-4 w-4 mr-2" />
                     Excluir
                   </DropdownMenuItem>
-                </DropdownMenuContent>
+                                </DropdownMenuContent>
               </DropdownMenuPortal>
               </DropdownMenu>
             )}
