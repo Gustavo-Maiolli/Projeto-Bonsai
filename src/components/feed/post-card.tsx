@@ -5,9 +5,9 @@ import { createBrowserSupabaseClientForFrontend } from "@/lib/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, MoreVertical, Trash2 } from "lucide-react"
+import { Heart, MessageCircle, Trash2 } from "lucide-react"
 import Link from "next/link"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuPortal } from "@/components/ui/dropdown-menu"
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuPortal } from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -111,21 +111,16 @@ export function PostCard({ post, currentUserId, showActions = false }: PostCardP
             </Link>
           </div>
             {isOwner && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" onPointerDown={(e) => e.stopPropagation()}>
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuPortal>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-red-600">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Excluir
-                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-              </DropdownMenuPortal>
-              </DropdownMenu>
+              // Substituição do DropdownMenu por um Button simples
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowDeleteDialog(true)} // Abre o AlertDialog diretamente
+                className="text-red-600 hover:bg-red-50 hover:text-red-700" // Estilo para consistência visual de exclusão
+                title="Excluir Post" // Adiciona um tooltip
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             )}
           </div>
 
