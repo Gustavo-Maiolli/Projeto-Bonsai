@@ -243,7 +243,7 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
               {/* Watering Frequency */}
               <div className="space-y-2">
                 <Label htmlFor="wateringFrequency">
-                  Frequência de rega (dias) <span className="text-red-500">*</span>
+                  Frequência dias que você rega sua planta {/*<span className="text-red-500">*</span>*/}
                 </Label>
                 <Input
                   id="wateringFrequency"
@@ -258,7 +258,7 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
 
               {/* Sun Frequency */}
               <div className="space-y-2">
-                <Label htmlFor="sunFrequency">Frequência de exposição ao sol (dias)</Label>
+                <Label htmlFor="sunFrequency">Frequência de dias que coloca sua planta no sol (dias)</Label>
                 <Input
                   id="sunFrequency"
                   type="number"
