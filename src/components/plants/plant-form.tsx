@@ -258,7 +258,7 @@ export function PlantForm({ userId, plant }: PlantFormProps) {
 
               {/* Sun Frequency */}
               <div className="space-y-2">
-                <Label htmlFor="sunFrequency">Frequência de dias que coloca sua planta no sol (dias)</Label>
+                <Label htmlFor="sunFrequency">Frequência de dias que coloca sua planta no sol</Label>
                 <Input
                   id="sunFrequency"
                   type="number"
