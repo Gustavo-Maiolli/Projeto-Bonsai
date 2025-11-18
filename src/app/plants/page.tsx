@@ -32,9 +32,6 @@ export default async function PlantsPage() {
 
   return (
     <div className="page-bg">
-      {/* Header */}
-      
-
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -71,8 +68,8 @@ export default async function PlantsPage() {
                     <h4 className="font-semibold text-primary truncate">{plant.tb02_apelido || plant.tb02_especie}</h4>
                     <p className="text-sm text-muted-foreground truncate">{plant.tb02_especie}</p>
                     <div className="flex gap-2 mt-2 text-xs text-muted-foreground">
-                      <span>Rega: {plant.tb02_frequencia_rega}d</span>
-                      {plant.tb02_frequencia_sol && <span>• Sol: {plant.tb02_frequencia_sol}</span>}
+                      <span>Frequência de dias seguidos em que você rega sua planta: {plant.tb02_frequencia_rega}d</span>
+                      {plant.tb02_frequencia_sol && <span>• Frequência de dias seguidos em que você coloca sua planta no sol: {plant.tb02_frequencia_sol}</span>}
                     </div>
                   </CardContent>
                 </Link>
