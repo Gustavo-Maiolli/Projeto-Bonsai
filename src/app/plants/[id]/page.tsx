@@ -199,9 +199,9 @@ export default async function PlantPage({ params }: PlantPageProps) {
                 <div className="flex items-start gap-3">
                   <Droplet className="h-5 w-5 text-emerald-600 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-emerald-900">Frequência de rega</p>
+                    <p className="text-sm font-medium text-emerald-900">Frequência de dias</p>
                     <p className="text-sm text-muted-foreground">
-                      A cada {plant.tb02_frequencia_rega} dias
+                     seguidos que você regua sua planta
                     </p>
                   </div>
                 </div>
@@ -210,9 +210,9 @@ export default async function PlantPage({ params }: PlantPageProps) {
                   <div className="flex items-start gap-3">
                     <Sun className="h-5 w-5 text-emerald-600 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-emerald-900">Exposição ao sol</p>
+                      <p className="text-sm font-medium text-emerald-900">Frequencia de dias seguidos </p>
                       <p className="text-sm text-muted-foreground">
-                        A cada {plant.tb02_frequencia_sol} dias
+                        que coloca sua planta no sol
                       </p>
                     </div>
                   </div>
@@ -220,7 +220,6 @@ export default async function PlantPage({ params }: PlantPageProps) {
               </CardContent>
             </Card>
 
-            {/* 📝 Notas */}
             {plant.tb02_notas_cuidado && (
               <Card>
                 <CardHeader>
@@ -235,8 +234,7 @@ export default async function PlantPage({ params }: PlantPageProps) {
             )}
           </div>
         </div>
-
-        {/* 📸 Posts / Evolução */}
+        
         <div className="mt-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-2xl font-bold text-emerald-900">Evolução</h3>
